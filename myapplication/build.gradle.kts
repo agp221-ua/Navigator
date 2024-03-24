@@ -1,19 +1,20 @@
 plugins {
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    `maven-publish`
 }
 
 android {
-    namespace = "software.galaniberico.navigator"
+    namespace = "software.galaniberico.myapplication"
     compileSdk = 34
 
     defaultConfig {
+        applicationId = "software.galaniberico.myapplication"
         minSdk = 27
+        targetSdk = 34
+        versionCode = 1
+        versionName = "0.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
-        version = "0.0.1"
     }
 
     buildTypes {
@@ -35,11 +36,14 @@ android {
 }
 
 dependencies {
-//    implementation(libs.moduledroid)
-    implementation(libs.moduledroidLocal)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.moduledroidLocal)
+    implementation(project(":Navigator"))
+    implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

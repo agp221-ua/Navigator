@@ -8,7 +8,9 @@ pluginManagement {
             }
         }
         mavenCentral()
+        mavenLocal()
         gradlePluginPortal()
+        maven("https://jitpack.io")
     }
 }
 dependencyResolutionManagement {
@@ -16,9 +18,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
+        maven("https://jitpack.io")
     }
 }
 
 rootProject.name = "Navigator"
-include(":app")
 include(":Navigator")
+include(":myapplication")
