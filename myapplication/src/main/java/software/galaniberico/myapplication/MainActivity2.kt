@@ -1,35 +1,20 @@
 package software.galaniberico.myapplication
 
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
-import software.galaniberico.navigator.facade.Navigate
-import software.galaniberico.navigator.tags.Navigation
 
-class MainActivity : AppCompatActivity() {
+class MainActivity2 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_main2)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        findViewById<Button>(R.id.button1).setOnClickListener {
-            Navigate.to("ir a 2")
-        }
-
-    }
-
-    @Navigation("ir a 2", MainActivity2::class)
-    fun to2(){
-        Log.i(PLUGIN_LOG_TAG, "EJECUTADO TO2")
     }
 }
