@@ -6,8 +6,12 @@ import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.moduledroid.util.ErrorMsgTemplate
 import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
 import software.galaniberico.navigator.tags.Navigation
+import java.lang.reflect.Method
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
+import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.instanceParameter
 
@@ -28,15 +32,15 @@ object Navigate {
             return
         }
 
-        val annotatedMethods: MutableList<KCallable<*>> = mutableListOf()
+        val annotatedMethods: MutableList<Method> = mutableListOf()
         var target: KClass<out Activity>? = null
 
-        currentActivity::class.members.forEach {
-            val annotation = it.findAnnotation<Navigation>() ?: return@forEach
-            if (annotation.id == id) {
-                annotatedMethods.add(it)
-                if (target == null)
-                    target = annotation.target
+        val declaredFunctions = currentActivity.javaClass.declaredMethods
+        for (member in declaredFunctions) {
+            if (member.isAnnotationPresent(Navigation::class.java) && member.getAnnotation(Navigation::class.java)?.id == id) {
+                annotatedMethods.add(member)
+                target = member.getAnnotation(Navigation::class.java)?.target
+                break
             }
         }
         if (annotatedMethods.size == 0)
@@ -57,11 +61,8 @@ object Navigate {
         target?.let { startActivity(it, id) }
     }
 
-    private fun callPreExecutionMethod(kCallable: KCallable<*>, currentActivity: Activity) {
-        if (kCallable.instanceParameter == null)
-            throw IllegalStateException("The instanceParameter of the KCallable obtained from the current Activity is null")
-
-        kCallable.call(currentActivity)
+    private fun callPreExecutionMethod(method: Method, currentActivity: Activity) {
+        method.invoke(currentActivity)
     }
 
     private fun startActivity(target: KClass<out Activity>, id: String? = null) {

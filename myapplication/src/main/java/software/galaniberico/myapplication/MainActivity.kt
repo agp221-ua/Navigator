@@ -13,6 +13,7 @@ import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.tags.Navigation
 
 class MainActivity : AppCompatActivity() {
+    var a = 45
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
