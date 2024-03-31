@@ -5,6 +5,7 @@ import android.util.Log
 import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.moduledroid.util.ErrorMsgTemplate
 import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
+import software.galaniberico.navigator.lifecicle.ComingActivityPile
 import software.galaniberico.navigator.tags.Navigation
 import java.lang.reflect.Method
 import kotlin.reflect.KCallable
@@ -20,6 +21,9 @@ object Navigate {
      *
      */
     fun to(id: String) {
+
+        if (id.isBlank()) throw IllegalArgumentException("The id field cannot be blank. Please revise the parameter value or if you prefer not to set an id, you can use Navigate.to(KClass<out Activity>) method instead")
+
         val currentActivity: Activity? = Facade.getCurrentActivity()
         if (currentActivity == null) {
             Log.w(
@@ -58,7 +62,10 @@ object Navigate {
         }
 
         callPreExecutionMethod(annotatedMethods[0], currentActivity)
-        target?.let { startActivity(it, id) }
+        target?.let {
+            startActivity(it, id)
+            ComingActivityPile.put(id, it)
+        }
     }
 
     private fun callPreExecutionMethod(method: Method, currentActivity: Activity) {
