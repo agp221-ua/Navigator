@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         findViewById<Button>(R.id.button1).setOnClickListener {
-            Navigate.to(MainActivity2::class) {
+            Navigate.to("ir a 2", MainActivity2::class) {
                 Log.i(PLUGIN_LOG_TAG, "FUNCIONA")
             }
         }
