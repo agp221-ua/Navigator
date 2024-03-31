@@ -9,7 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import software.galaniberico.navigator.tags.Land
 
 class MainActivity2 : AppCompatActivity() {
-    @Land("a", "ir a 2")
+    @Land("a")
     var b: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
