@@ -68,12 +68,54 @@ object Navigate {
         }
     }
 
+    fun to(clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
+
+        val currentActivity: Activity? = Facade.getCurrentActivity()
+        if (currentActivity == null) {
+            Log.w(
+                PLUGIN_LOG_TAG,
+                ErrorMsgTemplate.CURRENT_ACTIVITY_NULL_WARNING.with(
+                    "navigate to another activity",
+                    "attempting navigation"
+                )
+            )
+            return
+        }
+
+        lambda()
+        clazz.let {
+            val id = startActivity(it)
+            ComingActivityPile.put(id, it)
+        }
+    }
+
+    fun to(id: String, clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
+
+        val currentActivity: Activity? = Facade.getCurrentActivity()
+        if (currentActivity == null) {
+            Log.w(
+                PLUGIN_LOG_TAG,
+                ErrorMsgTemplate.CURRENT_ACTIVITY_NULL_WARNING.with(
+                    "navigate to another activity",
+                    "attempting navigation"
+                )
+            )
+            return
+        }
+
+        lambda()
+        clazz.let {
+            startActivity(it, id)
+            ComingActivityPile.put(id, it)
+        }
+    }
+
     private fun callPreExecutionMethod(method: Method, currentActivity: Activity) {
         method.invoke(currentActivity)
     }
 
-    private fun startActivity(target: KClass<out Activity>, id: String? = null) {
-        Facade.startActivity(target.java, id)
+    private fun startActivity(target: KClass<out Activity>, id: String? = null): String {
+        return Facade.startActivity(target.java, id)
     }
 
 }
