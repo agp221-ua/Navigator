@@ -1,6 +1,7 @@
 package software.galaniberico.navigator.lifecicle
 
 import android.app.Activity
+import java.lang.IllegalArgumentException
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
@@ -8,6 +9,7 @@ internal object ComingActivityPile {
     val pile: MutableList<ActivityPileNode> = mutableListOf()
 
     fun put(id: String, clazz: KClass<out Activity>, extraData: List<Pair<String, Any>>? = null){
+        if (id.isBlank()) throw IllegalArgumentException("The id field cannot be blank. Please revise the parameter value")
         pile.add(ActivityPileNode(id, clazz, extraData))
     }
 

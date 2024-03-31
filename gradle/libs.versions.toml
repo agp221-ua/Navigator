@@ -8,7 +8,7 @@ espressoCore = "3.5.1"
 appcompat = "1.6.1"
 material = "1.11.0"
 moduledroid = "0.1.3.1"
-moduledroidLocal = "0.1.3.5"
+moduledroidLocal = "0.1.3.6"
 activity = "1.8.2"
 constraintlayout = "2.1.4"
 

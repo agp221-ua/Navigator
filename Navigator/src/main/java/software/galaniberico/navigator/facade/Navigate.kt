@@ -21,6 +21,9 @@ object Navigate {
      *
      */
     fun to(id: String) {
+
+        if (id.isBlank()) throw IllegalArgumentException("The id field cannot be blank. Please revise the parameter value or if you prefer not to set an id, you can use Navigate.to(KClass<out Activity>) method instead")
+
         val currentActivity: Activity? = Facade.getCurrentActivity()
         if (currentActivity == null) {
             Log.w(

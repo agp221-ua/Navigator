@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
  *
  * All method with this annotation must not have any parameter.
  *
- * @param id The id of the Navigation. This should be unique, because if more than one are found,
+ * @param id The id of the Navigation. This should be not blank and unique, because if more than one are found,
  *  only the first match will be executed (depending of the plugin configuration, this behaviour may change).
  * @param target The class of the custom Activity that is wanted to start.
  */
