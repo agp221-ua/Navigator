@@ -16,9 +16,22 @@ class NavigatorConfigurator : PluginConfigurator {
             LandManager.land(activity)
         }
 
-
-
         Log.i(PLUGIN_LOG_TAG, "Plugin configured successfully")
+    }
+
+}
+
+internal object NavigatorConfigurations {
+    var landAttributeSearch: LandAttributeSearch = LandAttributeSearch.OLD_FIELDS_THEN_NAVIGATE_DATA
+    var unloadNavigateData: UnloadNavigateData = UnloadNavigateData.FROM_LAND_UNTIL_OTHER_LAND
+    var multipleNavigationIdTargets: MultipleNavigationIdTargets = MultipleNavigationIdTargets.SEND_ERROR
+
+    fun currentConfiguration(option: ConfigurationField) : OptionEnum{
+        return when(option) {
+            ConfigurationField.LAND_ATTRIBUTE_SEARCH -> landAttributeSearch
+            ConfigurationField.UNLOAD_NAVIGATEDATA -> unloadNavigateData
+            ConfigurationField.MULTIPLE_NAVIGATION_ID_TARGETS -> multipleNavigationIdTargets
+        }
     }
 }
 

@@ -24,10 +24,12 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         findViewById<Button>(R.id.button1).setOnClickListener {
-            Navigate.to("ir a 2", MainActivity2::class) {
+            Navigate.from(this).to("ir a 2", MainActivity2::class) {
                 Log.i(PLUGIN_LOG_TAG, "FUNCIONA")
             }
         }
+
+
 
     }
 
