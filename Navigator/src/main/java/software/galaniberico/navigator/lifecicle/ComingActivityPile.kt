@@ -8,9 +8,9 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 internal object ComingActivityPile {
     val pile: MutableList<ActivityPileNode> = mutableListOf()
 
-    fun put(id: String, clazz: KClass<out Activity>, extraData: Map<String, Any>? = null){
+    fun put(id: String, clazz: KClass<out Activity>, navigateData: Map<String, Any>? = null){
         if (id.isBlank()) throw IllegalArgumentException("The id field cannot be blank. Please revise the parameter value")
-        pile.add(ActivityPileNode(id, clazz, extraData))
+        pile.add(ActivityPileNode(id, clazz, navigateData))
     }
 
     fun pop(){
@@ -25,4 +25,4 @@ internal object ComingActivityPile {
     }
 }
 
-internal class ActivityPileNode(val id: String, val clazz: KClass<out Activity>, val extraData: Map<String, Any>?)
+internal class ActivityPileNode(val id: String, val clazz: KClass<out Activity>, val navigateData: Map<String, Any>?)

@@ -10,22 +10,24 @@ enum class ConfigurationField(
     LAND_ATTRIBUTE_SEARCH(
         LandAttributeSearch::class,
         { NavigatorConfigurations.landAttributeSearch = it as LandAttributeSearch }),
-    LOAD_EXTRADATA(
-        LoadExtradata::class,
-        { NavigatorConfigurations.loadExtraData = it as LoadExtradata }),
+    UNLOAD_NAVIGATEDATA(
+        UnloadNavigateData::class,
+        { NavigatorConfigurations.unloadNavigateData = it as UnloadNavigateData }),
 
 }
 
-enum class LandAttributeSearch(val oldFields: Boolean, val extraData: Boolean) : OptionEnum {
+enum class LandAttributeSearch(val oldFields: Boolean, val navigateData: Boolean) : OptionEnum {
     NONE(false, false),
     OLD_FIELDS(true, false),
-    EXTRA_DATA(false, true),
-    OLD_FIELDS_THEN_EXTRA_DATA(true, true),
-    EXTRA_DATA_THEN_OLD_FIELDS(true, true);
+    NAVIGATE_DATA(false, true),
+    OLD_FIELDS_THEN_NAVIGATE_DATA(true, true),
+    NAVIGATE_DATA_THEN_OLD_FIELDS(true, true);
 }
 
-enum class LoadExtradata : OptionEnum {
+enum class UnloadNavigateData : OptionEnum {
     NEVER,
-    WHEN_LAND_UNTIL_OTHER_LAND,
-    WHEN_LAND_UNTIL_ACTIVITY_START;
+    FROM_MANUAL_LOAD_UNTIL_MANUAL_ANNUL,
+    FROM_LAND_UNTIL_MANUAL_ANNUL,
+    FROM_LAND_UNTIL_OTHER_LAND,
+    FROM_LAND_UNTIL_ACTIVITY_START;
 }

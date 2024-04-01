@@ -15,7 +15,7 @@ object LandManager {
         for (attribute in newActivity.javaClass.declaredFields.filter { it.isAnnotationPresent(Land::class.java) }){
             val annotation = attribute.getAnnotation(Land::class.java)
             if (annotation?.oldField?.isNotBlank() == true && (annotation.id.isBlank() || annotation.id == activityId)){
-                oldActivity::class.java.getDeclaredField(annotation.oldField).apply { //TODO catch NoSuchFieldException and search in extradata
+                oldActivity::class.java.getDeclaredField(annotation.oldField).apply { //TODO catch NoSuchFieldException and search in navigatedata
                     val oldAccessibility = isAccessible
                     val newAccessibility = attribute.isAccessible
                     isAccessible = true
