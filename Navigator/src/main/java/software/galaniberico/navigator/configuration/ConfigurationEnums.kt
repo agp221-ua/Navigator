@@ -13,6 +13,9 @@ enum class ConfigurationField(
     UNLOAD_NAVIGATEDATA(
         UnloadNavigateData::class,
         { NavigatorConfigurations.unloadNavigateData = it as UnloadNavigateData }),
+    MULTIPLE_NAVIGATION_ID_TARGETS(
+        MultipleNavigationIdTargets::class,
+        {NavigatorConfigurations.multipleNavigationIdTargets = it as MultipleNavigationIdTargets})
 
 }
 
@@ -30,4 +33,8 @@ enum class UnloadNavigateData : OptionEnum {
     FROM_LAND_UNTIL_MANUAL_ANNUL,
     FROM_LAND_UNTIL_OTHER_LAND,
     FROM_LAND_UNTIL_ACTIVITY_START;
+}
+enum class MultipleNavigationIdTargets : OptionEnum {
+    SEND_ERROR,
+    PICK_FIRST
 }
