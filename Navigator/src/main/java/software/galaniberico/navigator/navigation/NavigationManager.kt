@@ -10,6 +10,7 @@ import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
 import software.galaniberico.navigator.exceptions.NoTargetsException
 import software.galaniberico.navigator.exceptions.NullActivityException
 import software.galaniberico.navigator.exceptions.TooManyTargetsException
+import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.lifecicle.ComingActivityPile
 import software.galaniberico.navigator.tags.Navigation
 import java.lang.reflect.Method
@@ -19,9 +20,12 @@ class NavigationManager internal constructor(var activity: Activity?) {
     fun to(id: String) {
         checkId(id)
 
-        if(activity == null)
-            activity = currentActivity() ?: throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
+        if (activity == null)
+            activity = currentActivity()
+                ?: throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
 
+        if(Navigate.navigating) throw IllegalStateException("Nested Navigation is not allowed.")
+        Navigate.navigating = true
         val annotatedMethods: MutableList<Method> = mutableListOf()
         var target: KClass<out Activity>? = null
 
@@ -37,37 +41,49 @@ class NavigationManager internal constructor(var activity: Activity?) {
         }
         checkTargets(annotatedMethods, activity!!, id)
 
-        callPreExecutionMethod(annotatedMethods[0], activity!!)
+        NavigateDataManager.prepareIncome()
+        annotatedMethods[0].invoke(activity!!)
+        val navigateData = NavigateDataManager.resolveIncome()
+
         target?.let {
             Facade.startActivity(activity!!, it.java, id)
-            ComingActivityPile.put(id, it)
+            ComingActivityPile.put(id, it, navigateData)
         }
     }
 
     fun to(clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
+        if(Navigate.navigating) throw IllegalStateException("Nested Navigation is not allowed.")
+        Navigate.navigating = true
+        NavigateDataManager.prepareIncome()
         lambda()
-        clazz.let {
-            val id = if (activity != null) Facade.startActivity(activity!!, it.java) else Facade.startActivity(it.java)
-            ComingActivityPile.put(id, it)
-        }
+        val navigateData = NavigateDataManager.resolveIncome()
+
+        val id = if (activity != null)
+            Facade.startActivity(activity!!, clazz.java)
+        else
+            Facade.startActivity(clazz.java)
+
+        ComingActivityPile.put(id, clazz, navigateData)
     }
 
     fun to(id: String, clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
+        if(Navigate.navigating) throw IllegalStateException("Nested Navigation is not allowed.")
+        Navigate.navigating = true
         checkId(id)
-
+        NavigateDataManager.prepareIncome()
         lambda()
-        clazz.let {
-            if (activity != null) Facade.startActivity(activity!!, it.java, id) else Facade.startActivity(it.java, id)
-            ComingActivityPile.put(id, it)
-        }
+        val navigateData = NavigateDataManager.resolveIncome()
+
+        if (activity != null)
+            Facade.startActivity(activity!!, clazz.java, id)
+        else
+            Facade.startActivity(clazz.java, id)
+
+        ComingActivityPile.put(id, clazz, navigateData)
     }
 
     private fun checkId(id: String) {
         if (id.isBlank()) throw IllegalArgumentException("The id field cannot be blank. Please revise the parameter value or if you prefer not to set an id, you can use to(KClass<out Activity>) method instead")
-    }
-
-    private fun callPreExecutionMethod(method: Method, currentActivity: Activity) {
-        method.invoke(currentActivity)
     }
 
     private fun currentActivity(): Activity? {
