@@ -139,9 +139,5 @@ class MissingNavigateDataException : NoSuchElementException {
     constructor(message: String?) : super(message){
         if(message != null) Log.e(PLUGIN_LOG_TAG, message)
     }
-    constructor(message: String?, cause: Throwable?) : super(message, cause){
-        if(message != null) Log.e(PLUGIN_LOG_TAG, message)
-    }
-    constructor(cause: Throwable?) : super(cause)
 }
 

@@ -1,7 +1,9 @@
 package software.galaniberico.myapplication
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -12,8 +14,8 @@ import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.tags.Land
 
 class MainActivity2 : AppCompatActivity() {
-//    @Land("a", "ir a 2")
-    private var b: Int = 0
+    @Land("a", "ir a 2")
+    private var b: Activity? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
