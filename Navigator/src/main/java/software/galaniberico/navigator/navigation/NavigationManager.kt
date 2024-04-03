@@ -7,6 +7,9 @@ import software.galaniberico.moduledroid.util.ErrorMsgTemplate
 import software.galaniberico.navigator.configuration.MultipleNavigationIdTargets
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
 import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
+import software.galaniberico.navigator.exceptions.BlankIdFieldException
+import software.galaniberico.navigator.exceptions.ConcurrentNavigationException
+import software.galaniberico.navigator.exceptions.ConcurrentNavigationLoadException
 import software.galaniberico.navigator.exceptions.NoTargetsException
 import software.galaniberico.navigator.exceptions.NullActivityException
 import software.galaniberico.navigator.exceptions.TooManyTargetsException
@@ -24,7 +27,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
             activity = currentActivity()
                 ?: throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
 
-        if(Navigate.navigating) throw IllegalStateException("Nested Navigation is not allowed.")
+        if(Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
         Navigate.navigating = true
         val annotatedMethods: MutableList<Method> = mutableListOf()
         var target: KClass<out Activity>? = null
@@ -52,7 +55,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
     }
 
     fun to(clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
-        if(Navigate.navigating) throw IllegalStateException("Nested Navigation is not allowed.")
+        if(Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
         Navigate.navigating = true
         NavigateDataManager.prepareIncome()
         lambda()
@@ -67,7 +70,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
     }
 
     fun to(id: String, clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
-        if(Navigate.navigating) throw IllegalStateException("Nested Navigation is not allowed.")
+        if(Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
         Navigate.navigating = true
         checkId(id)
         NavigateDataManager.prepareIncome()
@@ -83,7 +86,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
     }
 
     private fun checkId(id: String) {
-        if (id.isBlank()) throw IllegalArgumentException("The id field cannot be blank. Please revise the parameter value or if you prefer not to set an id, you can use to(KClass<out Activity>) method instead")
+        if (id.isBlank()) throw BlankIdFieldException("The id field cannot be blank. Please revise the parameter value or if you prefer not to set an id, you can use to(KClass<out Activity>) method instead")
     }
 
     private fun currentActivity(): Activity? {

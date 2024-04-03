@@ -4,6 +4,10 @@ import android.util.Log
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
 import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
 import software.galaniberico.navigator.configuration.UnloadNavigateData
+import software.galaniberico.navigator.exceptions.ConfigurationConflictException
+import software.galaniberico.navigator.exceptions.MissingLoadedDataException
+import software.galaniberico.navigator.exceptions.MissingNavigateDataException
+import software.galaniberico.navigator.exceptions.UnexpectedFunctionCallException
 
 object NavigateDataManager {
     private var currentIncomeNavigateData: MutableMap<String, Any?>? = null
@@ -23,20 +27,20 @@ object NavigateDataManager {
 
     fun with(id: String, value: Any?) {
         if (NavigatorConfigurations.unloadNavigateData == UnloadNavigateData.NEVER)
-            throw IllegalStateException("You are attempting to add data to a Navigation, but the current configuration does not allow it.")
+            throw ConfigurationConflictException("You are attempting to add data to a Navigation, but the current configuration does not allow it.")
         currentIncomeNavigateData?.set(id, value)
-            ?: throw IllegalStateException("You cannot add data outside of a pre-Navigate function. This method should only be called inside a method annotated with the @Navigation tag (executed by a NavigateProcess) or within a Navigate.to() lambda.")
+            ?: throw UnexpectedFunctionCallException("You cannot add data outside of a pre-Navigate function. This method should only be called inside a method annotated with the @Navigation tag (executed by a NavigateProcess) or within a Navigate.to() lambda.")
     }
 
 
     fun get(id: String): Pair<Any?, Boolean> {
         if (NavigatorConfigurations.unloadNavigateData == UnloadNavigateData.NEVER)
-            throw IllegalStateException("You are attempting to retrieve data from a Navigation, but the current configuration does not allow it.")
+            throw ConfigurationConflictException("You are attempting to retrieve data from a Navigation, but the current configuration does not allow it.")
 
         if (currentOutcomeNavigateData == null) {
             if (NavigatorConfigurations.unloadNavigateData == UnloadNavigateData.FROM_MANUAL_LOAD_UNTIL_MANUAL_NULLIFY)
-                throw IllegalStateException("You are attempting to retrieve data from a Navigation, but according to the current configuration, you must manually load it before using Navigate.load().")
-            throw IllegalStateException("You are attempting to retrieve data from a Navigation, but there is no data available for loading. This may occur because no landing process has occurred or, as per the current configuration, the data has been nullified.")
+                throw ConfigurationConflictException("You are attempting to retrieve data from a Navigation, but according to the current configuration, you must manually load it before using Navigate.load().")
+            throw MissingLoadedDataException("You are attempting to retrieve data from a Navigation, but there is no loaded data available. This may occur because no landing process has occurred or, as per the current configuration, the data has been nullified.")
         }
         if (!currentOutcomeNavigateData!!.containsKey(id)) return Pair(null, false)
         return Pair(currentOutcomeNavigateData!![id], true)
@@ -50,7 +54,7 @@ object NavigateDataManager {
 
     fun loadStoredNavigateData(id: String){
         currentOutcomeNavigateData = navigateDataStorage.remove(id)
-            ?: throw NoSuchElementException("There is no stored navigate data associated to given id parameter.")
+            ?: throw MissingNavigateDataException("There is no stored navigate data associated to given id parameter. Maybe it has been already loaded.")
     }
 
     fun nullifyCurrentOutcomeNavigateData(){
