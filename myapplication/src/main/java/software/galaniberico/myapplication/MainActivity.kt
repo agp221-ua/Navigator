@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     @Navigation("ir a 2", MainActivity2::class)
     fun to2(){
-        Navigate.with("a", a)
-        Navigate.to(MainActivity2::class)
+        Navigate.with("button", findViewById<Button>(R.id.button1))
+//        Navigate.to(MainActivity2::class)
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity
 import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
 import software.galaniberico.navigator.configuration.UnloadNavigateData
+import software.galaniberico.navigator.exceptions.BlankIdFieldException
 import software.galaniberico.navigator.exceptions.ConcurrentNavigationLoadException
 import software.galaniberico.navigator.exceptions.ConfigurationConflictException
 import software.galaniberico.navigator.exceptions.InvalidActivityIdException
@@ -49,7 +50,7 @@ object Navigate {
     inline fun <reified T : Any?> get(id: String, default: T? = null): T? {
         val (value, found) = NavigateDataManager.get(id)
         if (!found) return default
-        if (value !is T) throw DataTypeMismatchException("The retrieved data is not of the expected type.")
+        if (value !is T) throw DataTypeMismatchException("The retrieved data for id \"$id\" is not of the expected type.")
         return value
     }
 

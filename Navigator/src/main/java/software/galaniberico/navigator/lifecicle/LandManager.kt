@@ -1,13 +1,17 @@
 package software.galaniberico.navigator.lifecicle
 
 import android.app.Activity
+import android.util.Log
 import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.navigator.configuration.LandAnnotationSearch
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
+import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
 import software.galaniberico.navigator.configuration.UnloadNavigateData
 import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.navigation.NavigateDataManager
+import software.galaniberico.navigator.navigation.ParentData
 import software.galaniberico.navigator.tags.Land
+import java.lang.IllegalArgumentException
 import java.lang.reflect.Field
 import kotlin.RuntimeException
 
@@ -21,26 +25,25 @@ object LandManager {
 
         if (NavigatorConfigurations.unloadNavigateData != UnloadNavigateData.NEVER) {
 
-            NavigateDataManager.storeNavigateData(activityId, apn.navigateData)
-
-            val oldActivity = Facade.getCurrentActivity() ?: return //TODO maybe add some log
+            NavigateDataManager.storeNavigateData(activityId, apn.navigateData, apn.parentData)
 
             setNavigateData(activityId)
 
             if (NavigatorConfigurations.landAnnotationSearch != LandAnnotationSearch.NONE)
-                setAnnotationsData(activityId, newActivity, oldActivity)
+                setAnnotationsData(activityId, newActivity, apn.parentData)
         }
         Navigate.navigating = false
     }
 
     private fun setNavigateData(activityId: String) {
-        NavigateDataManager.loadStoredNavigateData(activityId)
+        if (NavigatorConfigurations.unloadNavigateData != UnloadNavigateData.FROM_MANUAL_LOAD_UNTIL_MANUAL_NULLIFY)
+            NavigateDataManager.loadStoredNavigateData(activityId)
     }
 
     private fun setAnnotationsData(
         activityId: String,
         newActivity: Activity,
-        oldActivity: Activity
+        parentData: ParentData,
     ) {
         for (attribute in newActivity.javaClass.declaredFields.filter {
             it.isAnnotationPresent(
@@ -51,7 +54,7 @@ object LandManager {
             if (annotation?.oldField?.isNotBlank() == true && (annotation.id.isBlank() || annotation.id == activityId)) {
                 when (NavigatorConfigurations.landAnnotationSearch) {
                     LandAnnotationSearch.OLD_FIELDS -> setDataFromOldField(
-                        oldActivity,
+                        parentData,
                         annotation,
                         attribute,
                         newActivity
@@ -65,7 +68,7 @@ object LandManager {
 
                     LandAnnotationSearch.OLD_FIELDS_THEN_NAVIGATE_DATA -> {
                         if (!setDataFromOldField(
-                                oldActivity,
+                                parentData,
                                 annotation,
                                 attribute,
                                 newActivity
@@ -77,7 +80,7 @@ object LandManager {
                     LandAnnotationSearch.NAVIGATE_DATA_THEN_OLD_FIELDS -> {
                         if (!setDataFromNavigateData(annotation, attribute, newActivity))
                             setDataFromOldField(
-                                oldActivity,
+                                parentData,
                                 annotation,
                                 attribute,
                                 newActivity
@@ -91,22 +94,24 @@ object LandManager {
     }
 
     private fun setDataFromOldField(
-        oldActivity: Activity,
+        parentData: ParentData,
         annotation: Land,
         attribute: Field,
         newActivity: Activity
     ): Boolean {
         try {
-            oldActivity::class.java.getDeclaredField(annotation.oldField)
-                .apply {
-                    val oldAccessibility = isAccessible
-                    val newAccessibility = attribute.isAccessible
-                    isAccessible = true
-                    attribute.isAccessible = true
-                    attribute.set(newActivity, get(oldActivity)!!)
-                    attribute.isAccessible = newAccessibility
-                    isAccessible = oldAccessibility
-                }
+            val (value, found) = parentData.get(annotation.oldField)
+            if (!found) return false
+            val newAccessibility = attribute.isAccessible
+            attribute.isAccessible = true
+            attribute.set(newActivity, value)
+            attribute.isAccessible = newAccessibility
+        } catch (e: IllegalArgumentException) {
+            Log.w(
+                PLUGIN_LOG_TAG,
+                "The retrieved data for id \"${annotation.oldField}\" is not of the expected type."
+            )
+            return false
         } catch (e: Exception) {
             return false
         }
@@ -118,14 +123,22 @@ object LandManager {
         attribute: Field,
         newActivity: Activity
     ): Boolean {
+        if (NavigatorConfigurations.unloadNavigateData == UnloadNavigateData.FROM_MANUAL_LOAD_UNTIL_MANUAL_NULLIFY)
+            return false
         try {
-            val (value, found) = NavigateDataManager.get(annotation.oldField)
+            val (value, found) = NavigateDataManager.get(annotation.oldField, true)
             if (!found) return false
             val newAccessibility = attribute.isAccessible
             attribute.isAccessible = true
             attribute.set(newActivity, value)
             attribute.isAccessible = newAccessibility
 
+        } catch (e: IllegalArgumentException) {
+            Log.w(
+                PLUGIN_LOG_TAG,
+                "The retrieved data for id \"${annotation.oldField}\" is not of the expected type."
+            )
+            return false
         } catch (e: Exception) {
             return false
         }
