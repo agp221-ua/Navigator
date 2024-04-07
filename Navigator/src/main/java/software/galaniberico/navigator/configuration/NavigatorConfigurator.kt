@@ -9,17 +9,26 @@ import software.galaniberico.moduledroid.subcomponents.kernelconfigurator.Plugin
 import software.galaniberico.navigator.lifecicle.ComingActivityPile
 import software.galaniberico.navigator.lifecicle.LandManager
 import software.galaniberico.navigator.navigation.NavigateDataManager
+import software.galaniberico.navigator.navigation.ResultDataManager
 
 class NavigatorConfigurator : PluginConfigurator {
     override fun configure(app: Application) {
         Log.i(PLUGIN_LOG_TAG, "Starting plugin configuration")
 
         Facade.addOnCreateSubscription { activity: Activity, _: Bundle? ->
+            Facade.getIdOrProvideOne(activity)
             LandManager.land(activity)
         }
 
         Facade.addOnDestroySubscription {
             ComingActivityPile.saveParentData(it)
+        }
+
+        Facade.addOnResumeSubscription {
+            if (ResultDataManager.currentOutputResult == null
+                || ResultDataManager.currentOutputResult!!.parentId != Facade.getId(it))
+                return@addOnResumeSubscription
+            ResultDataManager.executeOnResult()
         }
 
         Log.i(PLUGIN_LOG_TAG, "Plugin configured successfully")

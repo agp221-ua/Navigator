@@ -7,6 +7,7 @@ internal object NavigatorConfigurations {
     var landGetterSearch: LandGetterSearch = LandGetterSearch.OLD_FIELDS_THEN_NAVIGATE_DATA
     var unloadNavigateData: UnloadNavigateData = UnloadNavigateData.FROM_LAND_UNTIL_OTHER_LAND
     var multipleNavigationIdTargets: MultipleNavigationIdTargets = MultipleNavigationIdTargets.SEND_ERROR
+    var multipleOnResultIdTargets: MultipleOnResultIdTargets = MultipleOnResultIdTargets.SEND_ERROR
 
     fun currentConfiguration(option: ConfigurationField) : OptionEnum{
         return when(option) {
@@ -14,6 +15,7 @@ internal object NavigatorConfigurations {
             ConfigurationField.LAND_GETTER_SEARCH -> landGetterSearch
             ConfigurationField.UNLOAD_NAVIGATEDATA -> unloadNavigateData
             ConfigurationField.MULTIPLE_NAVIGATION_ID_TARGETS -> multipleNavigationIdTargets
+            ConfigurationField.MULTIPLE_ON_RESULT_ID_TARGETS -> multipleOnResultIdTargets
             ConfigurationField.PARENT_ACTIVITY_DATA_ACCESS -> parentActivityDataAccess
             ConfigurationField.PARENT_ACTIVITY_MAP_PROTOCOL -> parentActivityMapProtocol
         }

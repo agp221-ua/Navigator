@@ -15,7 +15,6 @@ class TooManyTargetsException : RuntimeException {
     }
     constructor(cause: Throwable?) : super(cause)
 }
-
 class NoTargetsException : RuntimeException {
     constructor() : super()
     constructor(message: String?) : super(message){
@@ -36,7 +35,6 @@ class NullActivityException : RuntimeException {
     }
     constructor(cause: Throwable?) : super(cause)
 }
-
 class DataTypeMismatchException : IllegalStateException {
     constructor() : super()
     constructor(message: String?) : super(message){
@@ -57,7 +55,6 @@ class EnumTypeMismatchException : IllegalStateException {
     }
     constructor(cause: Throwable?) : super(cause)
 }
-
 class ConfigurationConflictException : IllegalStateException {
     constructor() : super()
     constructor(message: String?) : super(message){
@@ -68,7 +65,6 @@ class ConfigurationConflictException : IllegalStateException {
     }
     constructor(cause: Throwable?) : super(cause)
 }
-
 class InvalidActivityIdException : IllegalArgumentException {
     constructor() : super()
     constructor(message: String?) : super(message){
@@ -79,18 +75,18 @@ class InvalidActivityIdException : IllegalArgumentException {
     }
     constructor(cause: Throwable?) : super(cause)
 }
-
 class BlankIdFieldException : IllegalArgumentException {
     constructor() : super()
-    constructor(message: String?) : super(message){
-        if(message != null) Log.e(PLUGIN_LOG_TAG, message)
+    constructor(message: String?) : super(message) {
+        if (message != null) Log.e(PLUGIN_LOG_TAG, message)
     }
-    constructor(message: String?, cause: Throwable?) : super(message, cause){
-        if(message != null) Log.e(PLUGIN_LOG_TAG, message)
+
+    constructor(message: String?, cause: Throwable?) : super(message, cause) {
+        if (message != null) Log.e(PLUGIN_LOG_TAG, message)
     }
+
     constructor(cause: Throwable?) : super(cause)
 }
-
 class ConcurrentNavigationLoadException : IllegalStateException {
     constructor() : super()
     constructor(message: String?) : super(message){
@@ -101,7 +97,6 @@ class ConcurrentNavigationLoadException : IllegalStateException {
     }
     constructor(cause: Throwable?) : super(cause)
 }
-
 class UnexpectedFunctionCallException : IllegalStateException {
     constructor() : super()
     constructor(message: String?) : super(message){
@@ -112,7 +107,6 @@ class UnexpectedFunctionCallException : IllegalStateException {
     }
     constructor(cause: Throwable?) : super(cause)
 }
-
 class MissingLoadedDataException : IllegalStateException {
     constructor() : super()
     constructor(message: String?) : super(message){
@@ -133,11 +127,9 @@ class ConcurrentNavigationException : IllegalStateException {
     }
     constructor(cause: Throwable?) : super(cause)
 }
-
 class MissingNavigateDataException : NoSuchElementException {
     constructor() : super()
     constructor(message: String?) : super(message){
         if(message != null) Log.e(PLUGIN_LOG_TAG, message)
     }
 }
-
