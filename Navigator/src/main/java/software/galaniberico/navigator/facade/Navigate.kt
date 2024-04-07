@@ -1,11 +1,9 @@
 package software.galaniberico.navigator.facade
 
 import android.app.Activity
-import android.util.Log
 import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.moduledroid.util.ErrorMsgTemplate
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
-import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
 import software.galaniberico.navigator.configuration.UnloadNavigateData
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
 import software.galaniberico.navigator.exceptions.ConcurrentNavigationLoadException
@@ -14,11 +12,10 @@ import software.galaniberico.navigator.exceptions.InvalidActivityIdException
 import software.galaniberico.navigator.exceptions.DataTypeMismatchException
 import software.galaniberico.navigator.exceptions.NullActivityException
 import software.galaniberico.navigator.exceptions.UnexpectedFunctionCallException
-import software.galaniberico.navigator.navigation.NavigateDataManager
+import software.galaniberico.navigator.data.NavigateDataManager
 import software.galaniberico.navigator.navigation.NavigationManager
-import software.galaniberico.navigator.navigation.ResultDataManager
+import software.galaniberico.navigator.data.ResultDataManager
 import software.galaniberico.navigator.tags.NavigateProcess
-import java.lang.IllegalStateException
 import kotlin.reflect.KClass
 
 object Navigate {

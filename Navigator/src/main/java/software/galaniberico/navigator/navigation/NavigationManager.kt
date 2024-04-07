@@ -11,29 +11,31 @@ import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
 import software.galaniberico.navigator.configuration.ParentActivityDataAccess
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
 import software.galaniberico.navigator.exceptions.ConcurrentNavigationException
+import software.galaniberico.navigator.exceptions.InvalidActivityIdException
 import software.galaniberico.navigator.exceptions.NoTargetsException
 import software.galaniberico.navigator.exceptions.NullActivityException
 import software.galaniberico.navigator.exceptions.TooManyTargetsException
 import software.galaniberico.navigator.exceptions.UnexpectedFunctionCallException
 import software.galaniberico.navigator.facade.Navigate
-import software.galaniberico.navigator.lifecicle.ComingActivityPile
+import software.galaniberico.navigator.data.ComingActivityPile
+import software.galaniberico.navigator.data.NavigateDataManager
+import software.galaniberico.navigator.data.ParentData
+import software.galaniberico.navigator.data.ResultData
 import software.galaniberico.navigator.tags.Navigation
 import software.galaniberico.navigator.tags.OnResult
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
 class NavigationManager internal constructor(var activity: Activity?) {
-    var navigateData: Map<String, Any?>? = null
-    var parentData: ParentData? = null
-    var target: KClass<out Activity>? = null
+    private var navigateData: Map<String, Any?>? = null
+    private var parentData: ParentData? = null
+    private var target: KClass<out Activity>? = null
     var id: String? = null
 
     fun to(id: String) {
         checkId(id)
-
-        if (activity == null)
-            activity = currentActivity()
-                ?: throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
+        checkUnique(id)
+        getActivity()
 
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
         Navigate.navigating = true
@@ -68,11 +70,19 @@ class NavigationManager internal constructor(var activity: Activity?) {
         }
     }
 
-    fun to(clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
-        if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
+    private fun checkUnique(id: String){
+        if (ComingActivityPile.has(id)) throw InvalidActivityIdException("The ID provided is already in use. Please choose a different ID to avoid conflicts.")
+    }
+
+    private fun getActivity() {
         if (activity == null)
             activity = currentActivity()
                 ?: throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
+    }
+
+    fun to(clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
+        if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
+        getActivity()
         Navigate.navigating = true
         NavigateDataManager.prepareIncome()
         lambda()
@@ -85,11 +95,10 @@ class NavigationManager internal constructor(var activity: Activity?) {
 
     fun to(id: String, clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
-        if (activity == null)
-            activity = currentActivity()
-                ?: throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
+        getActivity()
         Navigate.navigating = true
         checkId(id)
+        checkUnique(id)
         NavigateDataManager.prepareIncome()
         lambda()
         val navigateData = NavigateDataManager.resolveIncome()
@@ -102,10 +111,9 @@ class NavigationManager internal constructor(var activity: Activity?) {
 
     fun toReturn(id: String): NavigationManager {
         this.id = checkId(id)
+        checkUnique(id)
 
-        if (activity == null)
-            activity = currentActivity()
-                ?: throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
+        getActivity()
 
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
         Navigate.navigating = true
@@ -139,9 +147,8 @@ class NavigationManager internal constructor(var activity: Activity?) {
 
     fun toReturn(clazz: KClass<out Activity>, lambda: () -> Unit = {}): NavigationManager {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
-        if (activity == null)
-            activity = currentActivity()
-                ?: throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
+        getActivity()
+
         Navigate.navigating = true
         NavigateDataManager.prepareIncome()
         lambda()
@@ -161,6 +168,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
         Navigate.navigating = true
         checkId(id)
+        checkUnique(id)
         NavigateDataManager.prepareIncome()
         lambda()
         navigateData = NavigateDataManager.resolveIncome()
@@ -218,9 +226,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
         }
     }
     private fun getResultDataFromTag(onResultId: String): ResultData {
-        if (activity == null)
-            activity = currentActivity()
-                ?: throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
+        getActivity()
 
         val annotatedMethods: MutableList<Method> = mutableListOf()
 

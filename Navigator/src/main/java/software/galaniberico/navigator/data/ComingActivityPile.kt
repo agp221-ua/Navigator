@@ -1,9 +1,7 @@
-package software.galaniberico.navigator.lifecicle
+package software.galaniberico.navigator.data
 
 import android.app.Activity
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
-import software.galaniberico.navigator.navigation.ParentData
-import software.galaniberico.navigator.navigation.ResultData
 import kotlin.reflect.KClass
 
 internal object ComingActivityPile {
@@ -34,6 +32,13 @@ internal object ComingActivityPile {
                 break
             }
         }
+    }
+
+    fun has(id: String): Boolean {
+        for (node in pile)
+            if (node.id == id)
+                return true
+        return false
     }
 }
 

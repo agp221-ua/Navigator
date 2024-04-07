@@ -1,6 +1,5 @@
-package software.galaniberico.navigator.navigation
+package software.galaniberico.navigator.data
 
-import android.accessibilityservice.GestureDescription.StrokeDescription
 import android.app.Activity
 import android.content.Context
 import android.view.View

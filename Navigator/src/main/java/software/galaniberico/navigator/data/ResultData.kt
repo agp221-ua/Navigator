@@ -1,4 +1,4 @@
-package software.galaniberico.navigator.navigation
+package software.galaniberico.navigator.data
 
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
 import software.galaniberico.navigator.exceptions.UnexpectedFunctionCallException

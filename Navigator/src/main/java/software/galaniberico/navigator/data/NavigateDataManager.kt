@@ -1,4 +1,4 @@
-package software.galaniberico.navigator.navigation
+package software.galaniberico.navigator.data
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -67,7 +67,8 @@ object NavigateDataManager {
                 return Pair(currentOutcomeNavigateData!![id], true)
             }
             LandGetterSearch.NAVIGATE_DATA_THEN_OLD_FIELDS -> {
-                if (currentOutcomeNavigateData!!.containsKey(id)) return Pair(currentOutcomeNavigateData!![id], true)
+                if (currentOutcomeNavigateData!!.containsKey(id)) return Pair(
+                    currentOutcomeNavigateData!![id], true)
                 return currentOutcomeParentData!!.get(id)
             }
         }

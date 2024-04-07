@@ -1,4 +1,4 @@
-package software.galaniberico.navigator.lifecicle
+package software.galaniberico.navigator.navigation
 
 import android.app.Activity
 import android.util.Log
@@ -7,11 +7,11 @@ import software.galaniberico.navigator.configuration.LandAnnotationSearch
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
 import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
 import software.galaniberico.navigator.configuration.UnloadNavigateData
+import software.galaniberico.navigator.data.ComingActivityPile
+import software.galaniberico.navigator.data.NavigateDataManager
+import software.galaniberico.navigator.data.ParentData
+import software.galaniberico.navigator.data.ResultDataManager
 import software.galaniberico.navigator.facade.Navigate
-import software.galaniberico.navigator.navigation.NavigateDataManager
-import software.galaniberico.navigator.navigation.ParentData
-import software.galaniberico.navigator.navigation.ResultData
-import software.galaniberico.navigator.navigation.ResultDataManager
 import software.galaniberico.navigator.tags.Land
 import java.lang.IllegalArgumentException
 import java.lang.reflect.Field

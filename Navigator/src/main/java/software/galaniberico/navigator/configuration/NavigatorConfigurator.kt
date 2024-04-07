@@ -6,10 +6,9 @@ import android.os.Bundle
 import android.util.Log
 import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.moduledroid.subcomponents.kernelconfigurator.PluginConfigurator
-import software.galaniberico.navigator.lifecicle.ComingActivityPile
-import software.galaniberico.navigator.lifecicle.LandManager
-import software.galaniberico.navigator.navigation.NavigateDataManager
-import software.galaniberico.navigator.navigation.ResultDataManager
+import software.galaniberico.navigator.data.ComingActivityPile
+import software.galaniberico.navigator.navigation.LandManager
+import software.galaniberico.navigator.data.ResultDataManager
 
 class NavigatorConfigurator : PluginConfigurator {
     override fun configure(app: Application) {
@@ -20,7 +19,7 @@ class NavigatorConfigurator : PluginConfigurator {
             LandManager.land(activity)
         }
 
-        Facade.addOnDestroySubscription {
+        Facade.addOnStopSubscription {
             ComingActivityPile.saveParentData(it)
         }
 
