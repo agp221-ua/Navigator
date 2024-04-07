@@ -14,8 +14,8 @@ import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.tags.Land
 
 class MainActivity2 : AppCompatActivity() {
-    @Land("a", "ir a 2")
-    private var b: Activity? = null
+    @Land("a")
+    private var b: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -26,11 +26,7 @@ class MainActivity2 : AppCompatActivity() {
             insets
         }
 
-        findViewById<TextView>(R.id.tvPrueba).text = "Set to 45"
-        findViewById<TextView>(R.id.tvPrueba).setOnClickListener {
-            val aaaa = parent
-            Navigate.withResult("buttonName", "45")
-            Navigate.back()
-        }
+        findViewById<TextView>(R.id.tvPrueba).text = "$b"
+
     }
 }

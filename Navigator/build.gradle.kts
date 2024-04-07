@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         minSdk = 27
-        testInstrumentationRunner = "software.galaniberico.navigator.classes.ModuleDroidRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
         version = "0.0.4"
     }

@@ -23,12 +23,7 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        findViewById<Button>(R.id.button1).setOnClickListener {
-            Navigate.toReturn("ir a 2").andThen {
-                findViewById<Button>(R.id.button1).text = Navigate.getResult("buttonName", "TODOMAL")
-            }
-//            Navigate.to(MainActivity2::class)
-        }
+
     }
 
     @Navigation("ir a 2", MainActivity2::class)
