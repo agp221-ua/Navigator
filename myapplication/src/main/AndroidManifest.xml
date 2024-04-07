@@ -24,7 +24,9 @@
 
         <meta-data
             android:name="moduledroid_plugins"
-            android:value="                 software.galaniberico.navigator.configuration.NavigatorConfigurator             " />
+            android:value="
+                software.galaniberico.navigator.configuration.NavigatorConfigurator
+            " />
     </application>
 
 </manifest>
