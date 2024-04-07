@@ -10,6 +10,8 @@ import software.galaniberico.navigator.configuration.UnloadNavigateData
 import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.navigation.NavigateDataManager
 import software.galaniberico.navigator.navigation.ParentData
+import software.galaniberico.navigator.navigation.ResultData
+import software.galaniberico.navigator.navigation.ResultDataManager
 import software.galaniberico.navigator.tags.Land
 import java.lang.IllegalArgumentException
 import java.lang.reflect.Field
@@ -17,11 +19,10 @@ import kotlin.RuntimeException
 
 object LandManager {
     internal fun land(newActivity: Activity) {
-        val activityId =
-            newActivity.intent.getStringExtra(Facade.getIdKey()) ?: return //doesn't have id
+        val activityId = Facade.getId(newActivity) ?: return //doesn't have id
 
         val apn = ComingActivityPile.get(activityId, newActivity::class)
-            ?: return //TODO activity not expected (strange case)
+            ?: return //TODO activity not expected (strange case) log a little bit
 
         if (NavigatorConfigurations.unloadNavigateData != UnloadNavigateData.NEVER) {
 
@@ -32,6 +33,9 @@ object LandManager {
             if (NavigatorConfigurations.landAnnotationSearch != LandAnnotationSearch.NONE)
                 setAnnotationsData(activityId, newActivity, apn.parentData)
         }
+
+        if (apn.resultData != null)
+            ResultDataManager.put(apn.resultData)
         Navigate.navigating = false
     }
 

@@ -3,6 +3,7 @@ package software.galaniberico.navigator.lifecicle
 import android.app.Activity
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
 import software.galaniberico.navigator.navigation.ParentData
+import software.galaniberico.navigator.navigation.ResultData
 import kotlin.reflect.KClass
 
 internal object ComingActivityPile {
@@ -12,10 +13,11 @@ internal object ComingActivityPile {
         id: String,
         clazz: KClass<out Activity>,
         navigateData: Map<String, Any?>,
-        parentData: ParentData
+        parentData: ParentData,
+        resultData: ResultData? = null
     ){
         if (id.isBlank()) throw BlankIdFieldException("The id field cannot be blank. Please revise the parameter value")
-        pile.add(ActivityPileNode(id, clazz, navigateData, parentData))
+        pile.add(ActivityPileNode(id, clazz, navigateData, parentData, resultData))
     }
 
     fun get(id: String, clazz: KClass<out Activity>): ActivityPileNode? {
@@ -39,5 +41,6 @@ internal class ActivityPileNode(
     val id: String,
     val clazz: KClass<out Activity>,
     val navigateData: Map<String, Any?>,
-    val parentData: ParentData
+    val parentData: ParentData,
+    val resultData: ResultData? = null
 )

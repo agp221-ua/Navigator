@@ -26,6 +26,11 @@ class MainActivity2 : AppCompatActivity() {
             insets
         }
 
-        findViewById<TextView>(R.id.tvPrueba).text = "$b"
+        findViewById<TextView>(R.id.tvPrueba).text = "Set to 45"
+        findViewById<TextView>(R.id.tvPrueba).setOnClickListener {
+            val aaaa = parent
+            Navigate.withResult("buttonName", "45")
+            Navigate.back()
+        }
     }
 }

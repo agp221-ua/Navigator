@@ -1,11 +1,14 @@
 package software.galaniberico.navigator.configuration
 
-import android.app.Activity
 import kotlin.reflect.KClass
 
 sealed interface OptionEnum
 
 enum class MultipleNavigationIdTargets : OptionEnum {
+    SEND_ERROR,
+    PICK_FIRST
+}
+enum class MultipleOnResultIdTargets : OptionEnum {
     SEND_ERROR,
     PICK_FIRST
 }
@@ -25,6 +28,9 @@ enum class ConfigurationField(
     MULTIPLE_NAVIGATION_ID_TARGETS(
         MultipleNavigationIdTargets::class,
         {NavigatorConfigurations.multipleNavigationIdTargets = it as MultipleNavigationIdTargets}),
+    MULTIPLE_ON_RESULT_ID_TARGETS(
+        MultipleOnResultIdTargets::class,
+        {NavigatorConfigurations.multipleOnResultIdTargets = it as MultipleOnResultIdTargets}),
     PARENT_ACTIVITY_DATA_ACCESS(
         ParentActivityDataAccess::class,
         {NavigatorConfigurations.parentActivityDataAccess = it as ParentActivityDataAccess}),

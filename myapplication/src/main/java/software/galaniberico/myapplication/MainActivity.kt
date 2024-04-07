@@ -24,13 +24,15 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         findViewById<Button>(R.id.button1).setOnClickListener {
-            Navigate.from(this).to("ir a 2")
+            Navigate.toReturn("ir a 2").andThen {
+                findViewById<Button>(R.id.button1).text = Navigate.getResult("buttonName", "TODOMAL")
+            }
+//            Navigate.to(MainActivity2::class)
         }
     }
 
     @Navigation("ir a 2", MainActivity2::class)
     fun to2(){
-        Navigate.with("button", findViewById<Button>(R.id.button1))
-//        Navigate.to(MainActivity2::class)
+        //Nothing
     }
 }
