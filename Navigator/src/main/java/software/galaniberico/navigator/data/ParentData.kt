@@ -6,10 +6,10 @@ import android.view.View
 import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
 
-class ParentData() {
+internal class ParentData() {
 
-    var id: String? = null
-    var activity: Activity? = null
+    internal var id: String? = null
+    internal var activity: Activity? = null
     private var data: MutableMap<String, Any?>? = null
 
     private fun add(id: String, value: Any?) {
@@ -17,7 +17,7 @@ class ParentData() {
         data!![id] = value
     }
 
-    fun get(id: String): Pair<Any?, Boolean> {
+    internal fun get(id: String): Pair<Any?, Boolean> {
         if (activity != null) {
             try {
                 activity!!::class.java.getDeclaredField(id).let {
@@ -41,7 +41,7 @@ class ParentData() {
         }
     }
 
-    fun saveData() {
+    internal fun saveData() {
         if (activity == null) return
         id = Facade.getId(activity!!)
         for (field in activity!!::class.java.declaredFields) {

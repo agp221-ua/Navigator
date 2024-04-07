@@ -17,7 +17,7 @@ import java.lang.IllegalArgumentException
 import java.lang.reflect.Field
 import kotlin.RuntimeException
 
-object LandManager {
+internal object LandManager {
     internal fun land(newActivity: Activity) {
         val activityId = Facade.getId(newActivity) ?: return //doesn't have id
 

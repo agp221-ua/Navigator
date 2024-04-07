@@ -21,17 +21,17 @@ object NavigateDataManager {
     private var currentOutcomeNavigateData: Map<String, Any?>? = null
     @SuppressLint("StaticFieldLeak")
     private var currentOutcomeParentData: ParentData? = null
-    fun prepareIncome() {
+    internal fun prepareIncome() {
         currentIncomeNavigateData = mutableMapOf()
     }
 
-    fun resolveIncome(): Map<String, Any?> {
+    internal fun resolveIncome(): Map<String, Any?> {
         val res = currentIncomeNavigateData ?: mutableMapOf()
         currentIncomeNavigateData = null
         return res
     }
 
-    fun with(id: String, value: Any?) {
+    internal fun with(id: String, value: Any?) {
         if (NavigatorConfigurations.unloadNavigateData == UnloadNavigateData.NEVER)
             throw ConfigurationConflictException("You are attempting to add data to a Navigation, but the current configuration does not allow it.")
         if (id.isBlank()) throw BlankIdFieldException("The id field cannot be blank. Please revise the parameter value")
@@ -74,26 +74,26 @@ object NavigateDataManager {
         }
     }
 
-    fun storeNavigateData(id: String, navigateData: Map<String, Any?>, parentData: ParentData){
+    internal fun storeNavigateData(id: String, navigateData: Map<String, Any?>, parentData: ParentData){
         if (navigateDataStorage.containsKey(id))
             Log.w(PLUGIN_LOG_TAG, "A stored navigate data with the provided ID already exists. The previous value will be overwritten. If this behavior is unexpected, ensure unique IDs are used across different navigations.")
         navigateDataStorage[id] = navigateData
         parentDataStorage[id] = parentData
     }
 
-    fun loadStoredNavigateData(id: String){
+    internal fun loadStoredNavigateData(id: String){
         currentOutcomeNavigateData = navigateDataStorage.remove(id)
             ?: throw MissingNavigateDataException("There is no stored navigate data associated to given id parameter. Maybe it has been already loaded.")
         currentOutcomeParentData = parentDataStorage.remove(id)
             ?: throw MissingNavigateDataException("There is no stored parent data associated to given id parameter. Maybe it has been already loaded.")
     }
 
-    fun nullifyCurrentOutcomeNavigateData(){
+    internal fun nullifyCurrentOutcomeNavigateData(){
         currentOutcomeNavigateData = null
         currentOutcomeParentData = null
     }
 
-    fun isLoaded(): Boolean {
+    internal fun isLoaded(): Boolean {
         return currentOutcomeNavigateData != null
     }
     

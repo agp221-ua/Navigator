@@ -30,7 +30,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
     private var navigateData: Map<String, Any?>? = null
     private var parentData: ParentData? = null
     private var target: KClass<out Activity>? = null
-    var id: String? = null
+    private var id: String? = null
 
     fun to(id: String) {
         checkId(id)
@@ -68,16 +68,6 @@ class NavigationManager internal constructor(var activity: Activity?) {
             Facade.startActivity(activity!!, it.java, id)
             ComingActivityPile.put(id, it, navigateData, parentData)
         }
-    }
-
-    private fun checkUnique(id: String){
-        if (ComingActivityPile.has(id)) throw InvalidActivityIdException("The ID provided is already in use. Please choose a different ID to avoid conflicts.")
-    }
-
-    private fun getActivity() {
-        if (activity == null)
-            activity = currentActivity()
-                ?: throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
     }
 
     fun to(clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
@@ -334,4 +324,16 @@ class NavigationManager internal constructor(var activity: Activity?) {
             }
         }
     }
+
+    private fun checkUnique(id: String){
+        if (ComingActivityPile.has(id)) throw InvalidActivityIdException("The ID provided is already in use. Please choose a different ID to avoid conflicts.")
+    }
+
+    private fun getActivity() {
+        if (activity == null)
+            activity = currentActivity()
+                ?: throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
+    }
+
+
 }

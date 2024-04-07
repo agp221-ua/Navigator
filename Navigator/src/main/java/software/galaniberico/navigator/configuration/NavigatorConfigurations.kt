@@ -9,7 +9,7 @@ internal object NavigatorConfigurations {
     var multipleNavigationIdTargets: MultipleNavigationIdTargets = MultipleNavigationIdTargets.SEND_ERROR
     var multipleOnResultIdTargets: MultipleOnResultIdTargets = MultipleOnResultIdTargets.SEND_ERROR
 
-    fun currentConfiguration(option: ConfigurationField) : OptionEnum{
+    internal fun currentConfiguration(option: ConfigurationField) : OptionEnum{
         return when(option) {
             ConfigurationField.LAND_ANNOTATION_SEARCH -> landAnnotationSearch
             ConfigurationField.LAND_GETTER_SEARCH -> landGetterSearch

@@ -7,9 +7,9 @@ import software.galaniberico.navigator.exceptions.UnexpectedFunctionCallExceptio
 object ResultDataManager {
     private val pile = mutableListOf<ResultData>()
 
-    var currentOutputResult: ResultData? = null
+    internal var currentOutputResult: ResultData? = null
 
-    fun put(data: ResultData) {
+    internal fun put(data: ResultData) {
         pile.add(data)
     }
 
@@ -19,13 +19,13 @@ object ResultDataManager {
         return pile.removeLast()
     }
 
-    fun top(): ResultData? {
+    internal fun top(): ResultData? {
         if(pile.isEmpty())
             return null
         return pile.last()
     }
 
-    fun loadOutput() {
+    internal fun loadOutput() {
         currentOutputResult = pop()
     }
 
@@ -36,21 +36,21 @@ object ResultDataManager {
 
     }
 
-    fun executeOnResult(){
+    internal fun executeOnResult(){
         currentOutputResult!!.method()
         currentOutputResult = null
     }
 }
 
 
-class ResultData (val parentId: String?, var method: () -> Unit){
+internal class ResultData (val parentId: String?, var method: () -> Unit){
     private var data: MutableMap<String, Any?> = mutableMapOf()
 
-    fun add(id: String, value: Any?){
+    internal fun add(id: String, value: Any?){
         data[id] = value
     }
 
-    fun get(id: String): Pair<Any?, Boolean>{
+    internal fun get(id: String): Pair<Any?, Boolean>{
         if (!data.containsKey(id)) return Pair(null, false)
         return Pair(data[id], true)
     }
