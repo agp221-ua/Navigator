@@ -25,6 +25,7 @@ internal object LandManager {
         val apn = ComingActivityPile.get(activityId, newActivity::class)
             ?: return //TODO activity not expected (strange case) log a little bit
 
+        Navigate.navigating = false
         if (NavigatorConfigurations.unloadNavigateData != UnloadNavigateData.NEVER) {
 
             NavigateDataManager.storeNavigateData(activityId, apn.navigateData, apn.parentData)
@@ -37,7 +38,6 @@ internal object LandManager {
 
         if (apn.resultData != null)
             ResultDataManager.put(apn.resultData)
-        Navigate.navigating = false
     }
 
     private fun setNavigateData(activityId: String) {
