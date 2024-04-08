@@ -15,8 +15,12 @@ class NavigatorConfigurator : PluginConfigurator {
         Log.i(PLUGIN_LOG_TAG, "Starting plugin configuration")
 
         Facade.addOnCreateSubscription { activity: Activity, _: Bundle? ->
-            Facade.getIdOrProvideOne(activity)
-            LandManager.land(activity)
+            try {
+                Facade.getIdOrProvideOne(activity)
+                LandManager.land(activity)
+            } catch (e: Exception){
+                NavigatorConfigurations.landingErrorHandler(e)
+            }
         }
 
         Facade.addOnStopSubscription {

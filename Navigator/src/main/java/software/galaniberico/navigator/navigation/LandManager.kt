@@ -11,6 +11,7 @@ import software.galaniberico.navigator.data.ComingActivityPile
 import software.galaniberico.navigator.data.NavigateDataManager
 import software.galaniberico.navigator.data.ParentData
 import software.galaniberico.navigator.data.ResultDataManager
+import software.galaniberico.navigator.exceptions.DataTypeMismatchException
 import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.tags.Land
 import java.lang.IllegalArgumentException
@@ -111,11 +112,8 @@ internal object LandManager {
             attribute.set(newActivity, value)
             attribute.isAccessible = newAccessibility
         } catch (e: IllegalArgumentException) {
-            Log.w(
-                PLUGIN_LOG_TAG,
-                "The retrieved data for id \"${annotation.oldField}\" is not of the expected type."
-            )
-            return false
+            throw DataTypeMismatchException("The retrieved data for id \"${annotation.oldField}\" is not of the expected type.")
+
         } catch (e: Exception) {
             return false
         }
@@ -138,11 +136,7 @@ internal object LandManager {
             attribute.isAccessible = newAccessibility
 
         } catch (e: IllegalArgumentException) {
-            Log.w(
-                PLUGIN_LOG_TAG,
-                "The retrieved data for id \"${annotation.oldField}\" is not of the expected type."
-            )
-            return false
+                throw DataTypeMismatchException("The retrieved data for id \"${annotation.oldField}\" is not of the expected type.")
         } catch (e: Exception) {
             return false
         }

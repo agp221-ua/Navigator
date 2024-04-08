@@ -20,4 +20,7 @@ internal object NavigatorConfigurations {
             ConfigurationField.PARENT_ACTIVITY_MAP_PROTOCOL -> parentActivityMapProtocol
         }
     }
+
+    var landingErrorHandler: (Exception) -> Unit = {throw it}
+    var onResultErrorHandler: (Exception) -> Unit = {throw it}
 }
