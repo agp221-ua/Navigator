@@ -170,8 +170,10 @@ class NavigationManager internal constructor(var activity: Activity?) {
 
     fun andThen() {
         checkToReturnIsCalled()
-        if (id == null)
+        if (id == null) {
+            Navigate.navigating = false
             throw UnexpectedFunctionCallException("This method cannot be called after calling a 'toReturn' method without providing an 'id' parameter.")
+        }
         val onResultId = id!!
         val resultData = getResultDataFromTag(onResultId)
 
@@ -212,6 +214,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
 
     private fun checkToReturnIsCalled() {
         if (navigateData == null || parentData == null || target == null) {
+            Navigate.navigating = false
             throw UnexpectedFunctionCallException("This method cannot be called before calling the 'toReturn' method.")
         }
     }
@@ -251,7 +254,10 @@ class NavigationManager internal constructor(var activity: Activity?) {
     }
 
     private fun checkId(id: String): String {
-        if (id.isBlank()) throw BlankIdFieldException("The id field cannot be blank. Please revise the parameter value or if you prefer not to set an id, you can use to(KClass<out Activity>) method instead")
+        if (id.isBlank()){
+            Navigate.navigating = false
+            throw BlankIdFieldException("The id field cannot be blank. Please revise the parameter value or if you prefer not to set an id, you can use to(KClass<out Activity>) method instead")
+        }
         return id
     }
 
@@ -279,6 +285,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
                 PLUGIN_LOG_TAG,
                 "The current activity ($activity) has no method with the annotation ${Navigation::class.simpleName} or not with the ID field with value \"$id\"."
             )
+            Navigate.navigating = false
             throw NoTargetsException("The current activity ($activity) has no method with the annotation ${Navigation::class.simpleName} or not with the ID field with value \"$id\".")
         }
         if (annotatedMethods.size > 1) {
@@ -287,6 +294,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
                     PLUGIN_LOG_TAG,
                     "The current activity ($activity) has several annotations with the ID field with value \"$id\"."
                 )
+                Navigate.navigating = false
                 throw TooManyTargetsException("The current activity ($activity) has several annotations with the ID field with value \"$id\".")
             } else {
                 Log.w(
@@ -307,6 +315,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
                 PLUGIN_LOG_TAG,
                 "The current activity ($activity) has no method with the annotation ${OnResult::class.simpleName} or not with the ID field with value \"$id\"."
             )
+            Navigate.navigating = false
             throw NoTargetsException("The current activity ($activity) has no method with the annotation ${OnResult::class.simpleName} or not with the ID field with value \"$id\".")
         }
         if (annotatedMethods.size > 1) {
@@ -315,6 +324,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
                     PLUGIN_LOG_TAG,
                     "The current activity ($activity) has several annotations with the ID field with value \"$id\"."
                 )
+                Navigate.navigating = false
                 throw TooManyTargetsException("The current activity ($activity) has several annotations with the ID field with value \"$id\".")
             } else {
                 Log.w(
@@ -326,13 +336,19 @@ class NavigationManager internal constructor(var activity: Activity?) {
     }
 
     private fun checkUnique(id: String){
-        if (ComingActivityPile.has(id)) throw InvalidActivityIdException("The ID provided is already in use. Please choose a different ID to avoid conflicts.")
+        if (ComingActivityPile.has(id)) {
+            Navigate.navigating = false
+            throw InvalidActivityIdException("The ID provided is already in use. Please choose a different ID to avoid conflicts.")
+        }
     }
 
     private fun getActivity() {
         if (activity == null)
             activity = currentActivity()
-                ?: throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
+        if(activity == null){
+            Navigate.navigating = false
+            throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
+        }
     }
 
 
