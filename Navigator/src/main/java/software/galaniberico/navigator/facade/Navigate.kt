@@ -103,12 +103,11 @@ object Navigate {
                 "attempting navigation"
             )
         )
-        if (ResultDataManager.top() == null)
-            activity.finish()
-        else {
+        ResultDataManager.top()?.let {
             ResultDataManager.loadOutput()
-            activity.finish()
         }
+        NavigateDataManager.nullifyCurrentOutcomeNavigateData()
+        activity.finish()
 
     }
 

@@ -7,6 +7,7 @@ import android.util.Log
 import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.moduledroid.subcomponents.kernelconfigurator.PluginConfigurator
 import software.galaniberico.navigator.data.ComingActivityPile
+import software.galaniberico.navigator.data.NavigateDataManager
 import software.galaniberico.navigator.navigation.LandManager
 import software.galaniberico.navigator.data.ResultDataManager
 
@@ -32,6 +33,12 @@ class NavigatorConfigurator : PluginConfigurator {
                 || ResultDataManager.currentOutputResult!!.parentId != Facade.getId(it))
                 return@addOnResumeSubscription
             ResultDataManager.executeOnResult()
+        }
+
+        Facade.addOnResumeSubscription {
+            if (NavigateDataManager.isParent(it)){
+                NavigateDataManager.nullifyCurrentOutcomeNavigateData()
+            }
         }
 
         Log.i(PLUGIN_LOG_TAG, "Plugin configured successfully")

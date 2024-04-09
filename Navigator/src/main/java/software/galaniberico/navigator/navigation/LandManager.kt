@@ -21,11 +21,11 @@ import kotlin.RuntimeException
 internal object LandManager {
     internal fun land(newActivity: Activity) {
         val activityId = Facade.getId(newActivity) ?: return //doesn't have id
+        Navigate.navigating = false
 
         val apn = ComingActivityPile.get(activityId, newActivity::class)
             ?: return //TODO activity not expected (strange case) log a little bit
 
-        Navigate.navigating = false
         if (NavigatorConfigurations.unloadNavigateData != UnloadNavigateData.NEVER) {
 
             NavigateDataManager.storeNavigateData(activityId, apn.navigateData, apn.parentData)
