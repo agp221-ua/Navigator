@@ -8,10 +8,59 @@
     tools:context=".MainActivity2">
 
     <TextView
-        android:id="@+id/tvPrueba"
+        android:id="@+id/tvA"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
-        tools:layout_editor_absoluteX="176dp"
-        tools:layout_editor_absoluteY="250dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/tvA"
+        app:layout_constraintTop_toBottomOf="@+id/tvA" />
+
+    <TextView
+        android:id="@+id/tvNull"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/tvB"
+        app:layout_constraintTop_toBottomOf="@+id/tvB" />
+
+    <TextView
+        android:id="@+id/tvBadType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/tvNull"
+        app:layout_constraintTop_toBottomOf="@+id/tvNull" />
+
+    <TextView
+        android:id="@+id/tvNoOldField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/tvBadType"
+        app:layout_constraintTop_toBottomOf="@+id/tvBadType" />
+
+    <TextView
+        android:id="@+id/tvAlways"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/tvNoOldField"
+        app:layout_constraintTop_toBottomOf="@+id/tvNoOldField" />
+
+    <TextView
+        android:id="@+id/tvId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/tvAlways"
+        app:layout_constraintTop_toBottomOf="@+id/tvAlways" />
 </androidx.constraintlayout.widget.ConstraintLayout>

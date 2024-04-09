@@ -14,6 +14,8 @@ import software.galaniberico.navigator.tags.Navigation
 
 class MainActivity : AppCompatActivity() {
     var a = 45
+    var b = TestingType("b", 46)
+    var nullVar: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -26,8 +28,36 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    @Navigation("ir a 2", MainActivity2::class)
-    fun to2(){
-        //Nothing
+    @Navigation("withTag", MainActivity2::class)
+    fun withTag(){
+        Log.w("TEST", "All Correct")
     }
+    @Navigation("withTag2", MainActivity2::class)
+    fun withTag2(){
+        Log.w("TEST", "All Correct")
+    }
+
+    @Navigation("withBadType", MainActivity2::class)
+    fun withBadType(){
+        Log.w("TEST", "All Correct")
+    }
+
+    @Navigation("withNoOldField", MainActivity2::class)
+    fun withNoOldField(){
+        Log.w("TEST", "All Correct")
+    }
+
+    @Navigation("withTooTargets", MainActivity2::class)
+    fun withTooTargets(){
+        Log.w("TEST", "All Correct")
+    }
+
+    @Navigation("withTooTargets", MainActivity2::class)
+    fun withTooTargets2(){
+        Log.w("TEST", "All Correct")
+    }
+
+
 }
+
+class TestingType(val ss: String, val ii: Int)

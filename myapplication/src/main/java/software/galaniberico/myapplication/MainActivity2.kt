@@ -1,23 +1,40 @@
 package software.galaniberico.myapplication
 
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
-import software.galaniberico.navigator.facade.Navigate
+import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.navigator.tags.Land
 
 class MainActivity2 : AppCompatActivity() {
+    @Land("a", "withTag")
+    private var aLand: Int = 0
+
+    @Land("b", "withTag")
+    private var bLand: TestingType = TestingType("default", 0)
+
+    @Land("nullVar", "withTag")
+    private var nullVarLand: String? = ""
+
+    @Land("a", "withBadType")
+    private var badType: TestingType? = null
+
+    @Land("nofield", "withNoOldField")
+    private var noOldField: String = "no value"
+
     @Land("a")
-    private var b: Int = 0
+    private var always: Int = 0
+
+
+
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_main2)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -26,7 +43,13 @@ class MainActivity2 : AppCompatActivity() {
             insets
         }
 
-        findViewById<TextView>(R.id.tvPrueba).text = "$b"
+        findViewById<TextView>(R.id.tvA).text = "$aLand"
+        findViewById<TextView>(R.id.tvB).text = "${bLand.ii} ${bLand.ss}"
+        findViewById<TextView>(R.id.tvNull).text = "$nullVarLand"
+        findViewById<TextView>(R.id.tvBadType).text = "$badType"
+        findViewById<TextView>(R.id.tvNoOldField).text = noOldField
+        findViewById<TextView>(R.id.tvAlways).text = "$always"
+        findViewById<TextView>(R.id.tvId).text = "${Facade.getId(this)}"
 
     }
 }
