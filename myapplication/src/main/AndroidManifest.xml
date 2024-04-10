@@ -10,6 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Navigator">
         <activity
+            android:name=".MainActivity3"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivityNullActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity2"
             android:exported="false" />
         <activity
@@ -24,9 +30,7 @@
 
         <meta-data
             android:name="moduledroid_plugins"
-            android:value="
-                software.galaniberico.navigator.configuration.NavigatorConfigurator
-            " />
+            android:value="                 software.galaniberico.navigator.configuration.NavigatorConfigurator             " />
     </application>
 
 </manifest>

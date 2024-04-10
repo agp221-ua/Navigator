@@ -2,13 +2,10 @@ package software.galaniberico.myapplication
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
 import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.tags.Navigation
 
@@ -55,6 +52,17 @@ class MainActivity : AppCompatActivity() {
     @Navigation("withTooTargets", MainActivity2::class)
     fun withTooTargets2(){
         Log.w("TEST", "All Correct")
+    }
+
+    @Navigation("withNavigateData", MainActivity2::class)
+    fun withNavigateData(){
+        Navigate.with("value1", 47)
+    }
+
+    @Navigation("getId", MainActivity2::class)
+    fun getId(){
+        Navigate.with("value1", 49)
+        Navigate.with("value2", "34445")
     }
 
 

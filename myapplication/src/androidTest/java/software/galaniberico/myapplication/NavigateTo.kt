@@ -1,13 +1,8 @@
 package software.galaniberico.myapplication
 
-import android.util.Log
-import android.widget.TextView
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -15,19 +10,13 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import junit.framework.TestCase.assertTrue
 import org.junit.Assert
-import org.junit.Before
-
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Rule
-import software.galaniberico.navigator.configuration.NavigatorConfigurator
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
-import software.galaniberico.navigator.exceptions.DataTypeMismatchException
 import software.galaniberico.navigator.exceptions.NoTargetsException
 import software.galaniberico.navigator.exceptions.TooManyTargetsException
 import software.galaniberico.navigator.facade.Navigate
-import software.galaniberico.navigator.facade.Navigator
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -42,6 +31,7 @@ class NavigateTo {
         ActivityScenarioRule(MainActivity::class.java)
 
     // ### .to(id) ###
+
     @Test
     fun toEmpty() {
         Assert.assertThrows(BlankIdFieldException::class.java) {

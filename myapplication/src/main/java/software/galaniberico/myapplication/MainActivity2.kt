@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import software.galaniberico.moduledroid.facade.Facade
+import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.tags.Land
 
 class MainActivity2 : AppCompatActivity() {
@@ -30,7 +31,6 @@ class MainActivity2 : AppCompatActivity() {
     private var always: Int = 0
 
 
-
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +50,23 @@ class MainActivity2 : AppCompatActivity() {
         findViewById<TextView>(R.id.tvNoOldField).text = noOldField
         findViewById<TextView>(R.id.tvAlways).text = "$always"
         findViewById<TextView>(R.id.tvId).text = "${Facade.getId(this)}"
+        findViewById<TextView>(R.id.tvWith).text = "${Navigate.get<Int>("value1") ?: "default"}"
+        findViewById<TextView>(R.id.tvWith2).text = "${Navigate.get<String>("value2", "default")}"
 
+        if (Navigate.id(this) == "withLoadedEmpty") {
+            Navigate.from(this).to(MainActivity3::class) {
+                Navigate.withLoaded()
+            }
+        }
+        if (Navigate.id(this) == "withLoadedOneElement") {
+            Navigate.from(this).to(MainActivity3::class) {
+                Navigate.withLoaded("withLoaded")
+            }
+        }
+        if (Navigate.id(this) == "withLoadedSeveralElements") {
+            Navigate.from(this).to(MainActivity3::class) {
+                Navigate.withLoaded("withLoaded", "withLoaded2")
+            }
+        }
     }
 }

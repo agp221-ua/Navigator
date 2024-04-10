@@ -63,4 +63,20 @@
         android:text="TextView"
         app:layout_constraintStart_toStartOf="@+id/tvAlways"
         app:layout_constraintTop_toBottomOf="@+id/tvAlways" />
+
+    <TextView
+        android:id="@+id/tvWith"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/tvId"
+        app:layout_constraintTop_toBottomOf="@+id/tvId" />
+
+    <TextView
+        android:id="@+id/tvWith2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="@+id/tvWith"
+        app:layout_constraintTop_toBottomOf="@+id/tvWith" />
 </androidx.constraintlayout.widget.ConstraintLayout>
