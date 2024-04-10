@@ -95,6 +95,10 @@ object NavigateDataManager {
         currentOutcomeParentData = null
     }
 
+    internal fun nullifyCurrentIncomeNavigateData(){
+        currentIncomeNavigateData = null
+    }
+
     internal fun isLoaded(): Boolean {
         return currentOutcomeNavigateData != null
     }
