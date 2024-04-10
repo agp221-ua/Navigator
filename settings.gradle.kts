@@ -25,4 +25,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Navigator"
 include(":Navigator")
-include(":myapplication")
+include(":TestApp")
