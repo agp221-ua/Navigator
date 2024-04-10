@@ -9,6 +9,10 @@ import software.galaniberico.navigator.configuration.MultipleOnResultIdTargets
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
 import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
 import software.galaniberico.navigator.configuration.ParentActivityDataAccess
+import software.galaniberico.navigator.data.ComingActivityPile
+import software.galaniberico.navigator.data.NavigateDataManager
+import software.galaniberico.navigator.data.ParentData
+import software.galaniberico.navigator.data.ResultData
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
 import software.galaniberico.navigator.exceptions.ConcurrentNavigationException
 import software.galaniberico.navigator.exceptions.InvalidActivityIdException
@@ -17,10 +21,6 @@ import software.galaniberico.navigator.exceptions.NullActivityException
 import software.galaniberico.navigator.exceptions.TooManyTargetsException
 import software.galaniberico.navigator.exceptions.UnexpectedFunctionCallException
 import software.galaniberico.navigator.facade.Navigate
-import software.galaniberico.navigator.data.ComingActivityPile
-import software.galaniberico.navigator.data.NavigateDataManager
-import software.galaniberico.navigator.data.ParentData
-import software.galaniberico.navigator.data.ResultData
 import software.galaniberico.navigator.tags.Navigation
 import software.galaniberico.navigator.tags.OnResult
 import java.lang.reflect.Method
@@ -74,8 +74,14 @@ class NavigationManager internal constructor(var activity: Activity?) {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
         getActivity()
         Navigate.navigating = true
+
         NavigateDataManager.prepareIncome()
-        lambda()
+        try {
+            lambda()
+        }catch (e: Exception){
+            NavigateDataManager.nullifyCurrentIncomeNavigateData()
+            throw e
+        }
         val navigateData = NavigateDataManager.resolveIncome()
         val parentData = resolveParentData(activity!!)
 
