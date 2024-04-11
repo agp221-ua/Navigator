@@ -88,6 +88,13 @@ class MainActivity2 : AppCompatActivity() {
             return
         }
 
+        if (Navigate.id(this) == "withResultEmpty"){
+            Navigate.get("to do",{})?.let { it() }
+        }
+        if (Navigate.id(this) == "withResultMultipleValues"){
+            Navigate.get("to do",{})?.let { it() }
+        }
+
         if(Navigate.get("return", false) == true)
             Navigate.back(this)
 
