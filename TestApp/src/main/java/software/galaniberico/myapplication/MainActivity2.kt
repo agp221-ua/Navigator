@@ -1,6 +1,7 @@
 package software.galaniberico.myapplication
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
@@ -43,7 +44,18 @@ class MainActivity2 : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
+        if (Navigate.id(this) == "loadAlreadyLoaded"){
+            Navigate.load(this)
+            Navigate.get<(activity: Activity) -> Unit>("to do")?.let { it(this) }
+            return
+        }
+        if (Navigate.id(this) == "loadOk"){
+            Navigate.load(this)
+            Navigate.get("to do",{})?.let { it() }
+            Navigate.nullify()
+            Navigate.back(this)
+            return
+        }
         findViewById<TextView>(R.id.tvA).text = "$aLand"
         findViewById<TextView>(R.id.tvB).text = "${bLand.ii} ${bLand.ss}"
         findViewById<TextView>(R.id.tvNull).text = "$nullVarLand"

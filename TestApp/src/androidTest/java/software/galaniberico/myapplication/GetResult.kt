@@ -55,7 +55,6 @@ class GetResult {
     @Test
     fun getResultBlank() {
         activityRule.scenario.onActivity {
-            activityRule.scenario.onActivity {
                 Navigate.toReturn("getResultBlank", MainActivity2::class) {
                     Navigate.with("to do", {
                         Navigate.withResult("res1", "return")
@@ -66,7 +65,7 @@ class GetResult {
                         Navigate.getResult<Any?>("    ", null)
                     }
                 }
-            }
+
         }
     }
 
@@ -74,7 +73,6 @@ class GetResult {
     @Test
     fun getResultMultipleValues() {
         activityRule.scenario.onActivity {
-            activityRule.scenario.onActivity {
                 Navigate.toReturn("getResultMultipleValues", MainActivity2::class) {
                     Navigate.with("to do", {
                         Navigate.withResult("res1", "result ok")
@@ -86,7 +84,7 @@ class GetResult {
                     Navigate.with("return", true)
                 }.andThen {
                     it.findViewById<TextView>(R.id.tvMain).text = Navigate.getResult("res1", "default")
-                }
+
             }
 
         }
@@ -98,7 +96,6 @@ class GetResult {
     @Test
     fun getResultDifferentValueTypes() {
         activityRule.scenario.onActivity {
-            activityRule.scenario.onActivity {
                 Navigate.toReturn("getResultDifferentValueTypes", MainActivity2::class) {
                     Navigate.with("to do", {
                         Navigate.withResult("res1", "result ok")
@@ -110,7 +107,7 @@ class GetResult {
                     it.findViewById<TextView>(R.id.tvMain).text = Navigate.getResult("res1", "default")
                     it.findViewById<TextView>(R.id.tvMain).text = "${Navigate.getResult("res2", 0)}"
                 }
-            }
+
 
         }
         onView(withId(R.id.tvMain)).check(matches(withText("45")))
@@ -118,7 +115,6 @@ class GetResult {
     @Test
     fun getResultSameId() {
         activityRule.scenario.onActivity {
-            activityRule.scenario.onActivity {
                 Navigate.toReturn("getResultSameId", MainActivity2::class) {
                     Navigate.with("to do", {
                         Navigate.withResult("res2", "result ok")
@@ -129,7 +125,7 @@ class GetResult {
                 }.andThen {
                     it.findViewById<TextView>(R.id.tvMain).text = "${Navigate.getResult("res2", 0)}"
                 }
-            }
+
 
         }
         onView(withId(R.id.tvMain)).check(matches(withText("45")))
@@ -137,7 +133,6 @@ class GetResult {
 
     @Test
     fun getResultNull() {
-        activityRule.scenario.onActivity {
             activityRule.scenario.onActivity {
                 Navigate.toReturn("getResultNull", MainActivity2::class) {
                     Navigate.with("to do", {
@@ -148,7 +143,7 @@ class GetResult {
                 }.andThen {
                     it.findViewById<TextView>(R.id.tvMain).text = Navigate.getResult("res2", "0") ?: "default"
                 }
-            }
+
 
         }
         onView(withId(R.id.tvMain)).check(matches(withText("default")))
@@ -156,7 +151,6 @@ class GetResult {
     @Test
     fun getResultDefault() {
         activityRule.scenario.onActivity {
-            activityRule.scenario.onActivity {
                 Navigate.toReturn("getResultDefault", MainActivity2::class) {
                     Navigate.with("to do", {
                         Navigate.withResult("res2", "value found")
@@ -166,7 +160,7 @@ class GetResult {
                 }.andThen {
                     it.findViewById<TextView>(R.id.tvMain).text = Navigate.getResult("res1", "0000") ?: "found null"
                 }
-            }
+
 
         }
         onView(withId(R.id.tvMain)).check(matches(withText("0000")))
