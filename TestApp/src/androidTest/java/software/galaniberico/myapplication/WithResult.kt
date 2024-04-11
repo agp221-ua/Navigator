@@ -47,7 +47,7 @@ class WithResult {
     @Test
     fun withResultBlank() {
         activityRule.scenario.onActivity {
-            Navigate.toReturn("withResultEmpty", MainActivity2::class) {
+            Navigate.toReturn("withResultBlank", MainActivity2::class) {
                 Navigate.with("to do", {
                     Assert.assertThrows(BlankIdFieldException::class.java) {
                         Navigate.withResult("  ", "sdaffasdf")
@@ -79,7 +79,7 @@ class WithResult {
     @Test
     fun withResultDifferentValueTypes() {
         activityRule.scenario.onActivity {
-            Navigate.toReturn("withResultMultipleValues", MainActivity2::class) {
+            Navigate.toReturn("withResultDifferentValueTypes", MainActivity2::class) {
                 Navigate.with("to do", {
                     Navigate.withResult("res1", "sdaffasdf")
                     Navigate.withResult("res2", 34)
@@ -94,7 +94,7 @@ class WithResult {
     @Test
     fun withResultSameId() {
         activityRule.scenario.onActivity {
-            Navigate.toReturn("withResultMultipleValues", MainActivity2::class) {
+            Navigate.toReturn("withResultSameId", MainActivity2::class) {
                 Navigate.with("to do", {
                     Navigate.withResult("res1", 45)
                     Navigate.withResult("res1", "sdaffasdf")
@@ -109,7 +109,7 @@ class WithResult {
     @Test
     fun withResultNull() {
         activityRule.scenario.onActivity {
-            Navigate.toReturn("withResultMultipleValues", MainActivity2::class) {
+            Navigate.toReturn("withResultNull", MainActivity2::class) {
                 Navigate.with("to do", {
                     Navigate.withResult("res1", null)
 

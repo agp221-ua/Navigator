@@ -91,7 +91,40 @@ class MainActivity2 : AppCompatActivity() {
         if (Navigate.id(this) == "withResultEmpty"){
             Navigate.get("to do",{})?.let { it() }
         }
+        if (Navigate.id(this) == "withResultBlank"){
+            Navigate.get("to do",{})?.let { it() }
+        }
         if (Navigate.id(this) == "withResultMultipleValues"){
+            Navigate.get("to do",{})?.let { it() }
+        }
+        if (Navigate.id(this) == "withResultNull"){
+            Navigate.get("to do",{})?.let { it() }
+        }
+        if (Navigate.id(this) == "withResultSameId"){
+            Navigate.get("to do",{})?.let { it() }
+        }
+        if (Navigate.id(this) == "withResultDifferentValueTypes"){
+            Navigate.get("to do",{})?.let { it() }
+        }
+        if (Navigate.id(this) == "getResultEmpty"){
+            Navigate.get("to do",{})?.let { it() }
+        }
+        if (Navigate.id(this) == "getResultBlank"){
+            Navigate.get("to do",{})?.let { it() }
+        }
+        if (Navigate.id(this) == "getResultMultipleValues"){
+            Navigate.get("to do",{})?.let { it() }
+        }
+        if (Navigate.id(this) == "getResultNull"){
+            Navigate.get("to do",{})?.let { it() }
+        }
+        if (Navigate.id(this) == "getResultSameId"){
+            Navigate.get("to do",{})?.let { it() }
+        }
+        if (Navigate.id(this) == "getResultDifferentValueTypes"){
+            Navigate.get("to do",{})?.let { it() }
+        }
+        if (Navigate.id(this) == "getResultDefault"){
             Navigate.get("to do",{})?.let { it() }
         }
 
