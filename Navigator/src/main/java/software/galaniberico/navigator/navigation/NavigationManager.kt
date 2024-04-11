@@ -144,7 +144,6 @@ class NavigationManager internal constructor(var activity: Activity?) {
     fun toReturn(clazz: KClass<out Activity>, lambda: () -> Unit = {}): NavigationManager {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
         getActivity()
-
         Navigate.navigating = true
         NavigateDataManager.prepareIncome()
         lambda()
@@ -162,6 +161,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
         lambda: () -> Unit = {}
     ): NavigationManager {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
+        getActivity()
         Navigate.navigating = true
         checkId(id)
         checkUnique(id)
