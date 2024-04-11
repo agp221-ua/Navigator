@@ -14,17 +14,20 @@ import software.galaniberico.navigator.data.ResultDataManager
 import software.galaniberico.navigator.exceptions.DataTypeMismatchException
 import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.tags.Land
-import java.lang.IllegalArgumentException
 import java.lang.reflect.Field
-import kotlin.RuntimeException
 
 internal object LandManager {
     internal fun land(newActivity: Activity) {
-        val activityId = Facade.getId(newActivity) ?: return //doesn't have id
+        val activityId = Facade.getId(newActivity)
+            ?: return //doesn't have id
         Navigate.navigating = false
 
         val apn = ComingActivityPile.get(activityId, newActivity::class)
-            ?: return //TODO activity not expected (strange case) log a little bit
+
+        if (apn == null){
+            Log.w(PLUGIN_LOG_TAG, "A not expected activity is starting. Maybe is something starting an activity external to the plugin?")
+            return
+        }
 
         if (NavigatorConfigurations.unloadNavigateData != UnloadNavigateData.NEVER) {
 

@@ -22,7 +22,6 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
     }
 
     @Navigation("withTag", MainActivity2::class)
@@ -63,6 +62,10 @@ class MainActivity : AppCompatActivity() {
     fun getId(){
         Navigate.with("value1", 49)
         Navigate.with("value2", "34445")
+    }
+    @Navigation("multipleConsecutive", MainActivity2::class)
+    fun multipleConsecutive(){
+        Navigate.with("multipleConsecutive", 1)
     }
 
 

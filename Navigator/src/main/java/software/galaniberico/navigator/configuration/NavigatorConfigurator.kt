@@ -8,8 +8,8 @@ import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.moduledroid.subcomponents.kernelconfigurator.PluginConfigurator
 import software.galaniberico.navigator.data.ComingActivityPile
 import software.galaniberico.navigator.data.NavigateDataManager
-import software.galaniberico.navigator.navigation.LandManager
 import software.galaniberico.navigator.data.ResultDataManager
+import software.galaniberico.navigator.navigation.LandManager
 
 class NavigatorConfigurator : PluginConfigurator {
     override fun configure(app: Application) {
@@ -17,7 +17,7 @@ class NavigatorConfigurator : PluginConfigurator {
 
         Facade.addOnCreateSubscription { activity: Activity, _: Bundle? ->
             try {
-                Facade.getIdOrProvideOne(activity)
+                val s = Facade.getIdOrProvideOne(activity)
                 LandManager.land(activity)
             } catch (e: Exception){
                 NavigatorConfigurations.landingErrorHandler(e)

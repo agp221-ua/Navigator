@@ -2,6 +2,7 @@ package software.galaniberico.myapplication
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -53,6 +54,21 @@ class MainActivity2 : AppCompatActivity() {
         findViewById<TextView>(R.id.tvWith).text = "${Navigate.get<Int>("value1") ?: "default"}"
         findViewById<TextView>(R.id.tvWith2).text = "${Navigate.get<String>("value2", "default")}"
 
+        if (Navigate.id(this) == "multipleConsecutive") {
+            Log.w("TEEEEEST", "PASSED")
+            val v = Navigate.get<Int>("multipleConsecutive")
+                ?: return
+            if (v != 0){
+                Navigate.from(this).to("multipleConsecutive", MainActivity2::class) {
+                    Navigate.with("multipleConsecutive", v-1)
+                }
+                return
+            }
+            Navigate.from(this).to(MainActivity3::class) {
+                Navigate.with("withLoaded2", "OK")
+            }
+            return
+        }
         if (Navigate.id(this) == "withLoadedEmpty") {
             Navigate.from(this).to(MainActivity3::class) {
                 Navigate.withLoaded()

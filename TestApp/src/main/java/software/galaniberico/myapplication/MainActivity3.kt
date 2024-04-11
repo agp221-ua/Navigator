@@ -9,6 +9,10 @@ import androidx.core.view.WindowInsetsCompat
 import software.galaniberico.navigator.facade.Navigate
 
 class MainActivity3 : AppCompatActivity() {
+    companion object {
+        var loaded = false
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -19,8 +23,10 @@ class MainActivity3 : AppCompatActivity() {
             insets
         }
 
-        findViewById<TextView>(R.id.tvWithLoaded1).text = "${Navigate.get<Int>("withLoaded") ?: "no data"}"
-        findViewById<TextView>(R.id.tvWithLoaded2).text = Navigate.get<String>("withLoaded2") ?: "no data"
-
+        findViewById<TextView>(R.id.tvWithLoaded1).text =
+            "${Navigate.get<Int>("withLoaded") ?: "no data"}"
+        findViewById<TextView>(R.id.tvWithLoaded2).text =
+            Navigate.get<String>("withLoaded2") ?: "no data"
+        loaded = true
     }
 }
