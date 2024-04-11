@@ -73,16 +73,30 @@ class MainActivity2 : AppCompatActivity() {
             Navigate.from(this).to(MainActivity3::class) {
                 Navigate.withLoaded()
             }
+            return
         }
         if (Navigate.id(this) == "withLoadedOneElement") {
             Navigate.from(this).to(MainActivity3::class) {
                 Navigate.withLoaded("withLoaded")
             }
+            return
         }
         if (Navigate.id(this) == "withLoadedSeveralElements") {
             Navigate.from(this).to(MainActivity3::class) {
                 Navigate.withLoaded("withLoaded", "withLoaded2")
             }
+            return
+        }
+
+        if(Navigate.get("return", false) == true)
+            Navigate.back(this)
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (Navigate.id(this) == "onResultNavigationNested"){
+            Navigate.get("to do",{})?.let { it() }
         }
     }
 }

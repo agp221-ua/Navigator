@@ -2,12 +2,14 @@ package software.galaniberico.myapplication
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.tags.Navigation
+import software.galaniberico.navigator.tags.OnResult
 
 class MainActivity : AppCompatActivity() {
     var a = 45
@@ -22,6 +24,18 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+    }
+
+    @Navigation("onResult", MainActivity2::class)
+    fun onResultNavigation(){
+        Log.w("TEST", "All Correct")
+        Navigate.with("return", true)
+    }
+
+    @Navigation("onResultNavigationNested", MainActivity2::class)
+    fun onResultNavigationNested(){
+        Log.w("TEST", "All Correct")
     }
 
     @Navigation("withTag", MainActivity2::class)
@@ -68,7 +82,14 @@ class MainActivity : AppCompatActivity() {
         Navigate.with("multipleConsecutive", 1)
     }
 
-
+    @OnResult("onResult")
+    fun onResult(){
+        findViewById<TextView>(R.id.tvMain).text = "returned"
+    }
+    @OnResult("onResult2")
+    fun onResult2(){
+        findViewById<TextView>(R.id.tvMain).text = "returned2"
+    }
 }
 
 class TestingType(val ss: String, val ii: Int)

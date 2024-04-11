@@ -13,6 +13,7 @@ import software.galaniberico.navigator.data.ComingActivityPile
 import software.galaniberico.navigator.data.NavigateDataManager
 import software.galaniberico.navigator.data.ParentData
 import software.galaniberico.navigator.data.ResultData
+import software.galaniberico.navigator.data.ResultDataManager
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
 import software.galaniberico.navigator.exceptions.ConcurrentNavigationException
 import software.galaniberico.navigator.exceptions.InvalidActivityIdException
@@ -38,6 +39,8 @@ class NavigationManager internal constructor(var activity: Activity?) {
         getActivity()
 
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
+        if (ResultDataManager.top() != null)
+            throw UnexpectedFunctionCallException("Attempting to navigate to an activity that is not intended to be returned from one that does, what is not allowed.")
         Navigate.navigating = true
         val annotatedMethods: MutableList<Method> = mutableListOf()
         var target: KClass<out Activity>? = null
@@ -72,6 +75,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
 
     fun to(clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
+        if (ResultDataManager.top() != null) throw UnexpectedFunctionCallException("Attempting to navigate to an activity that is not intended to be returned from one that does, what is not allowed.")
         getActivity()
         Navigate.navigating = true
 
@@ -91,6 +95,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
 
     fun to(id: String, clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
+        if (ResultDataManager.top() != null) throw UnexpectedFunctionCallException("Attempting to navigate to an activity that is not intended to be returned from one that does, what is not allowed.")
         getActivity()
         Navigate.navigating = true
         checkId(id)
@@ -119,6 +124,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
             if (member.isAnnotationPresent(Navigation::class.java)
                 && member.getAnnotation(Navigation::class.java)?.id == id
             ) {
+                val idddd = member.getAnnotation(Navigation::class.java)?.id
                 annotatedMethods.add(member)
                 if (target == null)
                     target = member.getAnnotation(Navigation::class.java)?.target
@@ -163,7 +169,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
         getActivity()
         Navigate.navigating = true
-        checkId(id)
+        this.id = checkId(id)
         checkUnique(id)
         NavigateDataManager.prepareIncome()
         lambda()
