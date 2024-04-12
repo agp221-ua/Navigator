@@ -182,5 +182,17 @@ class Get {
         onView(withId(R.id.tvWith)).check(matches(withText("49")))
         onView(withId(R.id.tvWith2)).check(matches(withText("34445")))
     }
+    @Test
+    fun getIdClassRecreate() {
+        activityRule.scenario.onActivity {
+            Navigate.to("landscape", MainActivity2::class){
+                Navigate.with("value1", 4555)
+                Navigate.with("value2", "123")
+            }
+        }
+
+        onView(withId(R.id.tvWith)).check(matches(withText("4555")))
+        onView(withId(R.id.tvWith2)).check(matches(withText("123")))
+    }
 
 }

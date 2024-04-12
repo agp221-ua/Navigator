@@ -1,7 +1,9 @@
 package software.galaniberico.myapplication
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +20,9 @@ class MainActivity : AppCompatActivity() {
 
     var noNavigateData = 45
     var both = 46
+
+    var context: Activity = this
+    var view: View? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -27,6 +32,8 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        view = findViewById(R.id.tvMain)
     }
 
     @Navigation("onResult", MainActivity2::class)
@@ -91,6 +98,17 @@ class MainActivity : AppCompatActivity() {
     @OnResult("onResult2")
     fun onResult2(){
         findViewById<TextView>(R.id.tvMain).text = "returned2"
+    }
+    @OnResult("tooReturnTargets")
+    fun tooTargets(){
+        findViewById<TextView>(R.id.tvMain).text = "returned2"
+    }
+    @OnResult("tooReturnTargets")
+    fun tooTargets2(){
+        findViewById<TextView>(R.id.tvMain).text = "returned2"
+    }
+    @Navigation("tooReturnTargets", MainActivity5::class)
+    fun tooTargets3(){
     }
 }
 

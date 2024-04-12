@@ -97,7 +97,7 @@ class NavigateToReturn {
     }
 
     @Test
-    fun toCreateNoReturnActivityFromAndThen() {
+    fun toCreateNotToReturnActivityFromAndThen() {
 
         activityRule.scenario.onActivity {
             Navigate.from(it).toReturn("onResult").andThen {

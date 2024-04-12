@@ -1,6 +1,8 @@
 package software.galaniberico.myapplication
 
+import android.content.Context
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -92,6 +94,19 @@ class MainActivity5 : AppCompatActivity() {
             findViewById<TextView>(R.id.tvNoAttribute).text = "${Navigate.get<Int>("noAttribute", 1)}"
             findViewById<TextView>(R.id.tvNoNavigateData).text = "${Navigate.get<Int>("noNavigateData", 2)}"
             findViewById<TextView>(R.id.tvBoth).text = "${Navigate.get<Int>("both", 3)}"
+        }
+        if (Navigate.id(this) == "activityOrDefault") {
+            findViewById<TextView>(R.id.tvNoNavigateData).text = "$noNavigateData"
+        }
+        if (Navigate.id(this) == "allMapProtocol") {
+            findViewById<TextView>(R.id.tvNoNavigateData).text = "${Navigate.get<Int>("noNavigateData", 2)}"
+            val context = Navigate.get<Context>("context")
+            val view = Navigate.get<View>("view")
+            findViewById<TextView>(R.id.tvContext).text = if (context != null) context::class.java.name.split(".").last() else "no value"
+            findViewById<TextView>(R.id.tvView).text = if (view != null) view::class.java.name.split(".").last() else "no value"
+        }
+        if (Navigate.id(this) == "tooReturnTargets") {
+            Navigate.back(this)
         }
     }
 }

@@ -2,6 +2,7 @@ package software.galaniberico.myapplication
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
@@ -33,6 +34,8 @@ class MainActivity2 : AppCompatActivity() {
     private var always: Int = 0
 
 
+
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +57,13 @@ class MainActivity2 : AppCompatActivity() {
             Navigate.get("to do",{})?.let { it() }
             Navigate.nullify()
             Navigate.back(this)
+            return
+        }
+        if (Navigate.id(this) == "landscape"){
+            this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            findViewById<TextView>(R.id.tvWith).text = "${Navigate.get<Int>("value1") ?: "default"}"
+            findViewById<TextView>(R.id.tvWith2).text = "${Navigate.get<String>("value2", "default")}"
+
             return
         }
         findViewById<TextView>(R.id.tvA).text = "$aLand"
