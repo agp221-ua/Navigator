@@ -15,6 +15,9 @@ class MainActivity : AppCompatActivity() {
     var a = 45
     var b = TestingType("b", 46)
     var nullVar: String? = null
+
+    var noNavigateData = 45
+    var both = 46
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -24,7 +27,6 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
     }
 
     @Navigation("onResult", MainActivity2::class)
