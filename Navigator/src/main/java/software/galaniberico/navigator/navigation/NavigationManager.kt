@@ -259,6 +259,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
     private fun resolveParentData(activity: Activity): ParentData {
         val parentData = ParentData()
         parentData.activity = activity
+        parentData.id = Facade.getId(activity)
         if (NavigatorConfigurations.parentActivityDataAccess != ParentActivityDataAccess.MAP_COPY)
             return parentData
         parentData.saveData()
