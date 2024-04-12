@@ -25,7 +25,7 @@ internal object LandManager {
         val apn = ComingActivityPile.get(activityId, newActivity::class)
 
         if (apn == null){
-            Log.w(PLUGIN_LOG_TAG, "A not expected activity is starting. Maybe is something starting an activity external to the plugin?")
+            Log.w(PLUGIN_LOG_TAG, "A not expected activity with id '$activityId' is starting. Maybe is something starting an activity external to the plugin?")
             return
         }
 

@@ -1,6 +1,8 @@
 package software.galaniberico.navigator.data
 
 import android.app.Activity
+import software.galaniberico.navigator.configuration.NavigatorConfigurations
+import software.galaniberico.navigator.configuration.ParentActivityDataAccess
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
 import kotlin.reflect.KClass
 
@@ -26,6 +28,7 @@ internal object ComingActivityPile {
     }
 
     internal fun saveParentData(activity: Activity){
+        if (NavigatorConfigurations.parentActivityDataAccess != ParentActivityDataAccess.ACTIVITY_ACCESS_OR_MAP_COPY) return
         for (node in pile){
             if (node.parentData.activity == activity) {
                 node.parentData.saveData()
