@@ -1,7 +1,9 @@
 package software.galaniberico.navigator.data
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.util.Log
+import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.navigator.configuration.LandGetterSearch
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
 import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
@@ -93,8 +95,18 @@ object NavigateDataManager {
         currentOutcomeParentData = null
     }
 
+    internal fun nullifyCurrentIncomeNavigateData(){
+        currentIncomeNavigateData = null
+    }
+
     internal fun isLoaded(): Boolean {
         return currentOutcomeNavigateData != null
+    }
+
+    internal fun isParent(activity: Activity): Boolean {
+        if (!isLoaded()) return false
+        val id = Facade.getId(activity)
+        return id == currentOutcomeParentData?.id
     }
     
 

@@ -2,7 +2,7 @@ package software.galaniberico.navigator.configuration
 
 internal object NavigatorConfigurations {
     var parentActivityMapProtocol: ParentActivityMapProtocol = ParentActivityMapProtocol.NO_VIEWS_NO_CONTEXT
-    var parentActivityDataAccess: ParentActivityDataAccess = ParentActivityDataAccess.MAP_COPY
+    var parentActivityDataAccess: ParentActivityDataAccess = ParentActivityDataAccess.ACTIVITY_ACCESS_OR_MAP_COPY
     var landAnnotationSearch: LandAnnotationSearch = LandAnnotationSearch.OLD_FIELDS_THEN_NAVIGATE_DATA
     var landGetterSearch: LandGetterSearch = LandGetterSearch.OLD_FIELDS_THEN_NAVIGATE_DATA
     var unloadNavigateData: UnloadNavigateData = UnloadNavigateData.FROM_LAND_UNTIL_OTHER_LAND
@@ -20,4 +20,7 @@ internal object NavigatorConfigurations {
             ConfigurationField.PARENT_ACTIVITY_MAP_PROTOCOL -> parentActivityMapProtocol
         }
     }
+
+    var landingErrorHandler: (Exception) -> Unit = {throw it}
+    var onResultErrorHandler: (Exception) -> Unit = {throw it}
 }

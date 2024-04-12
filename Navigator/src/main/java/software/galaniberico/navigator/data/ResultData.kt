@@ -5,7 +5,7 @@ import software.galaniberico.navigator.exceptions.UnexpectedFunctionCallExceptio
 
 
 object ResultDataManager {
-    private val pile = mutableListOf<ResultData>()
+    val pile = mutableListOf<ResultData>()
 
     internal var currentOutputResult: ResultData? = null
 
@@ -43,7 +43,7 @@ object ResultDataManager {
 }
 
 
-internal class ResultData (val parentId: String?, var method: () -> Unit){
+class ResultData (val parentId: String?, var method: () -> Unit){
     private var data: MutableMap<String, Any?> = mutableMapOf()
 
     internal fun add(id: String, value: Any?){

@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.View
 import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
+import software.galaniberico.navigator.configuration.ParentActivityDataAccess
 
 internal class ParentData() {
 
@@ -18,6 +19,9 @@ internal class ParentData() {
     }
 
     internal fun get(id: String): Pair<Any?, Boolean> {
+        if (NavigatorConfigurations.parentActivityDataAccess == ParentActivityDataAccess.NEVER){
+            return Pair(null, false)
+        }
         if (activity != null) {
             try {
                 activity!!::class.java.getDeclaredField(id).let {
@@ -27,10 +31,12 @@ internal class ParentData() {
                     it.isAccessible = a
                     return Pair(value, true)
                 }
-            } catch (e: NoSuchElementException) {
+            } catch (e: NoSuchFieldException) {
                 return Pair(null, false)
             }
         } else {
+            if (NavigatorConfigurations.parentActivityDataAccess == ParentActivityDataAccess.ACTIVITY_ACCESS_OR_DEFAULT)
+                return Pair(null, false)
             if (data != null) {
                 if (data!!.containsKey(id))
                     return Pair(data!![id], true)

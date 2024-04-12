@@ -11,18 +11,23 @@ import software.galaniberico.navigator.data.ComingActivityPile
 import software.galaniberico.navigator.data.NavigateDataManager
 import software.galaniberico.navigator.data.ParentData
 import software.galaniberico.navigator.data.ResultDataManager
+import software.galaniberico.navigator.exceptions.DataTypeMismatchException
 import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.tags.Land
-import java.lang.IllegalArgumentException
 import java.lang.reflect.Field
-import kotlin.RuntimeException
 
 internal object LandManager {
     internal fun land(newActivity: Activity) {
-        val activityId = Facade.getId(newActivity) ?: return //doesn't have id
+        val activityId = Facade.getId(newActivity)
+            ?: return //doesn't have id
+        Navigate.navigating = false
 
         val apn = ComingActivityPile.get(activityId, newActivity::class)
-            ?: return //TODO activity not expected (strange case) log a little bit
+
+        if (apn == null){
+            Log.w(PLUGIN_LOG_TAG, "A not expected activity with id '$activityId' is starting. Maybe is something starting an activity external to the plugin?")
+            return
+        }
 
         if (NavigatorConfigurations.unloadNavigateData != UnloadNavigateData.NEVER) {
 
@@ -36,7 +41,6 @@ internal object LandManager {
 
         if (apn.resultData != null)
             ResultDataManager.put(apn.resultData)
-        Navigate.navigating = false
     }
 
     private fun setNavigateData(activityId: String) {
@@ -111,11 +115,8 @@ internal object LandManager {
             attribute.set(newActivity, value)
             attribute.isAccessible = newAccessibility
         } catch (e: IllegalArgumentException) {
-            Log.w(
-                PLUGIN_LOG_TAG,
-                "The retrieved data for id \"${annotation.oldField}\" is not of the expected type."
-            )
-            return false
+            throw DataTypeMismatchException("The retrieved data for id \"${annotation.oldField}\" is not of the expected type.")
+
         } catch (e: Exception) {
             return false
         }
@@ -138,11 +139,7 @@ internal object LandManager {
             attribute.isAccessible = newAccessibility
 
         } catch (e: IllegalArgumentException) {
-            Log.w(
-                PLUGIN_LOG_TAG,
-                "The retrieved data for id \"${annotation.oldField}\" is not of the expected type."
-            )
-            return false
+                throw DataTypeMismatchException("The retrieved data for id \"${annotation.oldField}\" is not of the expected type.")
         } catch (e: Exception) {
             return false
         }

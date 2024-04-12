@@ -9,6 +9,11 @@ import software.galaniberico.navigator.configuration.MultipleOnResultIdTargets
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
 import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
 import software.galaniberico.navigator.configuration.ParentActivityDataAccess
+import software.galaniberico.navigator.data.ComingActivityPile
+import software.galaniberico.navigator.data.NavigateDataManager
+import software.galaniberico.navigator.data.ParentData
+import software.galaniberico.navigator.data.ResultData
+import software.galaniberico.navigator.data.ResultDataManager
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
 import software.galaniberico.navigator.exceptions.ConcurrentNavigationException
 import software.galaniberico.navigator.exceptions.InvalidActivityIdException
@@ -17,10 +22,6 @@ import software.galaniberico.navigator.exceptions.NullActivityException
 import software.galaniberico.navigator.exceptions.TooManyTargetsException
 import software.galaniberico.navigator.exceptions.UnexpectedFunctionCallException
 import software.galaniberico.navigator.facade.Navigate
-import software.galaniberico.navigator.data.ComingActivityPile
-import software.galaniberico.navigator.data.NavigateDataManager
-import software.galaniberico.navigator.data.ParentData
-import software.galaniberico.navigator.data.ResultData
 import software.galaniberico.navigator.tags.Navigation
 import software.galaniberico.navigator.tags.OnResult
 import java.lang.reflect.Method
@@ -38,6 +39,8 @@ class NavigationManager internal constructor(var activity: Activity?) {
         getActivity()
 
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
+        if (ResultDataManager.top() != null)
+            throw UnexpectedFunctionCallException("Attempting to navigate to an activity that is not intended to be returned from one that does, what is not allowed.")
         Navigate.navigating = true
         val annotatedMethods: MutableList<Method> = mutableListOf()
         var target: KClass<out Activity>? = null
@@ -72,10 +75,17 @@ class NavigationManager internal constructor(var activity: Activity?) {
 
     fun to(clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
+        if (ResultDataManager.top() != null) throw UnexpectedFunctionCallException("Attempting to navigate to an activity that is not intended to be returned from one that does, what is not allowed.")
         getActivity()
         Navigate.navigating = true
+
         NavigateDataManager.prepareIncome()
-        lambda()
+        try {
+            lambda()
+        }catch (e: Exception){
+            NavigateDataManager.nullifyCurrentIncomeNavigateData()
+            throw e
+        }
         val navigateData = NavigateDataManager.resolveIncome()
         val parentData = resolveParentData(activity!!)
 
@@ -85,6 +95,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
 
     fun to(id: String, clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
+        if (ResultDataManager.top() != null) throw UnexpectedFunctionCallException("Attempting to navigate to an activity that is not intended to be returned from one that does, what is not allowed.")
         getActivity()
         Navigate.navigating = true
         checkId(id)
@@ -113,6 +124,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
             if (member.isAnnotationPresent(Navigation::class.java)
                 && member.getAnnotation(Navigation::class.java)?.id == id
             ) {
+                val idddd = member.getAnnotation(Navigation::class.java)?.id
                 annotatedMethods.add(member)
                 if (target == null)
                     target = member.getAnnotation(Navigation::class.java)?.target
@@ -138,7 +150,6 @@ class NavigationManager internal constructor(var activity: Activity?) {
     fun toReturn(clazz: KClass<out Activity>, lambda: () -> Unit = {}): NavigationManager {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
         getActivity()
-
         Navigate.navigating = true
         NavigateDataManager.prepareIncome()
         lambda()
@@ -156,8 +167,9 @@ class NavigationManager internal constructor(var activity: Activity?) {
         lambda: () -> Unit = {}
     ): NavigationManager {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
+        getActivity()
         Navigate.navigating = true
-        checkId(id)
+        this.id = checkId(id)
         checkUnique(id)
         NavigateDataManager.prepareIncome()
         lambda()
@@ -170,8 +182,10 @@ class NavigationManager internal constructor(var activity: Activity?) {
 
     fun andThen() {
         checkToReturnIsCalled()
-        if (id == null)
+        if (id == null) {
+            Navigate.navigating = false
             throw UnexpectedFunctionCallException("This method cannot be called after calling a 'toReturn' method without providing an 'id' parameter.")
+        }
         val onResultId = id!!
         val resultData = getResultDataFromTag(onResultId)
 
@@ -212,6 +226,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
 
     private fun checkToReturnIsCalled() {
         if (navigateData == null || parentData == null || target == null) {
+            Navigate.navigating = false
             throw UnexpectedFunctionCallException("This method cannot be called before calling the 'toReturn' method.")
         }
     }
@@ -244,6 +259,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
     private fun resolveParentData(activity: Activity): ParentData {
         val parentData = ParentData()
         parentData.activity = activity
+        parentData.id = Facade.getId(activity)
         if (NavigatorConfigurations.parentActivityDataAccess != ParentActivityDataAccess.MAP_COPY)
             return parentData
         parentData.saveData()
@@ -251,7 +267,10 @@ class NavigationManager internal constructor(var activity: Activity?) {
     }
 
     private fun checkId(id: String): String {
-        if (id.isBlank()) throw BlankIdFieldException("The id field cannot be blank. Please revise the parameter value or if you prefer not to set an id, you can use to(KClass<out Activity>) method instead")
+        if (id.isBlank()){
+            Navigate.navigating = false
+            throw BlankIdFieldException("The id field cannot be blank. Please revise the parameter value or if you prefer not to set an id, you can use to(KClass<out Activity>) method instead")
+        }
         return id
     }
 
@@ -279,6 +298,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
                 PLUGIN_LOG_TAG,
                 "The current activity ($activity) has no method with the annotation ${Navigation::class.simpleName} or not with the ID field with value \"$id\"."
             )
+            Navigate.navigating = false
             throw NoTargetsException("The current activity ($activity) has no method with the annotation ${Navigation::class.simpleName} or not with the ID field with value \"$id\".")
         }
         if (annotatedMethods.size > 1) {
@@ -287,6 +307,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
                     PLUGIN_LOG_TAG,
                     "The current activity ($activity) has several annotations with the ID field with value \"$id\"."
                 )
+                Navigate.navigating = false
                 throw TooManyTargetsException("The current activity ($activity) has several annotations with the ID field with value \"$id\".")
             } else {
                 Log.w(
@@ -307,6 +328,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
                 PLUGIN_LOG_TAG,
                 "The current activity ($activity) has no method with the annotation ${OnResult::class.simpleName} or not with the ID field with value \"$id\"."
             )
+            Navigate.navigating = false
             throw NoTargetsException("The current activity ($activity) has no method with the annotation ${OnResult::class.simpleName} or not with the ID field with value \"$id\".")
         }
         if (annotatedMethods.size > 1) {
@@ -315,6 +337,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
                     PLUGIN_LOG_TAG,
                     "The current activity ($activity) has several annotations with the ID field with value \"$id\"."
                 )
+                Navigate.navigating = false
                 throw TooManyTargetsException("The current activity ($activity) has several annotations with the ID field with value \"$id\".")
             } else {
                 Log.w(
@@ -326,13 +349,19 @@ class NavigationManager internal constructor(var activity: Activity?) {
     }
 
     private fun checkUnique(id: String){
-        if (ComingActivityPile.has(id)) throw InvalidActivityIdException("The ID provided is already in use. Please choose a different ID to avoid conflicts.")
+        if (ComingActivityPile.has(id)) {
+            Navigate.navigating = false
+            throw InvalidActivityIdException("The ID provided is already in use. Please choose a different ID to avoid conflicts.")
+        }
     }
 
     private fun getActivity() {
         if (activity == null)
             activity = currentActivity()
-                ?: throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
+        if(activity == null){
+            Navigate.navigating = false
+            throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
+        }
     }
 
 

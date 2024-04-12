@@ -5,16 +5,16 @@ import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.moduledroid.util.ErrorMsgTemplate
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
 import software.galaniberico.navigator.configuration.UnloadNavigateData
+import software.galaniberico.navigator.data.NavigateDataManager
+import software.galaniberico.navigator.data.ResultDataManager
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
 import software.galaniberico.navigator.exceptions.ConcurrentNavigationLoadException
 import software.galaniberico.navigator.exceptions.ConfigurationConflictException
-import software.galaniberico.navigator.exceptions.InvalidActivityIdException
 import software.galaniberico.navigator.exceptions.DataTypeMismatchException
+import software.galaniberico.navigator.exceptions.InvalidActivityIdException
 import software.galaniberico.navigator.exceptions.NullActivityException
 import software.galaniberico.navigator.exceptions.UnexpectedFunctionCallException
-import software.galaniberico.navigator.data.NavigateDataManager
 import software.galaniberico.navigator.navigation.NavigationManager
-import software.galaniberico.navigator.data.ResultDataManager
 import software.galaniberico.navigator.tags.NavigateProcess
 import kotlin.reflect.KClass
 
@@ -83,6 +83,7 @@ object Navigate {
     inline fun <reified T : Any?> get(id: String, default: T? = null): T? {
         val (value, found) = NavigateDataManager.get(id)
         if (!found) return default
+        if (value == null) return null
         if (value !is T) throw DataTypeMismatchException("The retrieved data for id \"$id\" is not of the expected type.")
         return value
     }
@@ -90,6 +91,7 @@ object Navigate {
     inline fun <reified T : Any?> getResult(id: String, default: T? = null): T? {
         val (value, found) = ResultDataManager.getResult(id)
         if (!found) return default
+        if (value == null) return null
         if (value !is T) throw DataTypeMismatchException("The retrieved data for id \"$id\" is not of the expected type.")
         return value
     }
@@ -103,12 +105,11 @@ object Navigate {
                 "attempting navigation"
             )
         )
-        if (ResultDataManager.top() == null)
-            activity.finish()
-        else {
+        ResultDataManager.top()?.let {
             ResultDataManager.loadOutput()
-            activity.finish()
         }
+        NavigateDataManager.nullifyCurrentOutcomeNavigateData()
+        activity.finish()
 
     }
 
@@ -131,5 +132,9 @@ object Navigate {
         NavigateDataManager.nullifyCurrentOutcomeNavigateData()
     }
 
+    fun id(activity: Activity? = null): String?{
+        val a = activity ?: Facade.getCurrentActivity() ?: return null
+        return Facade.getId(a)
+    }
 
 }
