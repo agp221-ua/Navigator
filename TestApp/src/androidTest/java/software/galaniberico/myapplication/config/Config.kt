@@ -1,4 +1,4 @@
-package software.galaniberico.myapplication
+package software.galaniberico.myapplication.config
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -7,6 +7,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import software.galaniberico.myapplication.MainActivity
 import software.galaniberico.myapplication.MainActivity3.Companion.loaded
 import software.galaniberico.navigator.configuration.ConfigurationField
 import software.galaniberico.navigator.configuration.LandAnnotationSearch
@@ -29,8 +30,6 @@ class Config {
     fun setup() {
         loaded = false
     }
-
-    // ### @Land ###
 
     @Test
     fun configBadType() {

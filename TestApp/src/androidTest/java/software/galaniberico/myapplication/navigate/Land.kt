@@ -1,4 +1,4 @@
-package software.galaniberico.myapplication
+package software.galaniberico.myapplication.navigate
 
 import android.content.Intent
 import androidx.test.espresso.Espresso.onView
@@ -13,7 +13,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import software.galaniberico.myapplication.MainActivity
+import software.galaniberico.myapplication.MainActivity3
 import software.galaniberico.myapplication.MainActivity3.Companion.loaded
+import software.galaniberico.myapplication.R
 import software.galaniberico.navigator.exceptions.DataTypeMismatchException
 import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.facade.Navigator

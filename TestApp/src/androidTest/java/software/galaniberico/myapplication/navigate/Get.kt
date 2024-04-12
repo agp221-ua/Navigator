@@ -1,4 +1,4 @@
-package software.galaniberico.myapplication
+package software.galaniberico.myapplication.navigate
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
@@ -12,6 +12,9 @@ import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import software.galaniberico.myapplication.MainActivity
+import software.galaniberico.myapplication.MainActivity2
+import software.galaniberico.myapplication.R
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
 import software.galaniberico.navigator.exceptions.MissingLoadedDataException
 import software.galaniberico.navigator.facade.Navigate

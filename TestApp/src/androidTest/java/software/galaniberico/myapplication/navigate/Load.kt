@@ -1,4 +1,4 @@
-package software.galaniberico.myapplication
+package software.galaniberico.myapplication.navigate
 
 import android.app.Activity
 import android.widget.TextView
@@ -13,6 +13,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import software.galaniberico.myapplication.MainActivity
+import software.galaniberico.myapplication.MainActivity2
+import software.galaniberico.myapplication.R
 import software.galaniberico.navigator.configuration.ConfigurationField
 import software.galaniberico.navigator.configuration.UnloadNavigateData
 import software.galaniberico.navigator.exceptions.ConcurrentNavigationLoadException

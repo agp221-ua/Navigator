@@ -1,4 +1,4 @@
-package software.galaniberico.myapplication
+package software.galaniberico.myapplication.navigate
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -10,6 +10,9 @@ import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import software.galaniberico.myapplication.MainActivity
+import software.galaniberico.myapplication.MainActivity2
+import software.galaniberico.myapplication.R
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
 import software.galaniberico.navigator.exceptions.UnexpectedFunctionCallException
 import software.galaniberico.navigator.facade.Navigate
@@ -150,7 +153,7 @@ class With {
     @Test
     fun toIdClassWith() {
         activityRule.scenario.onActivity {
-            Navigate.to("withNavigateData",MainActivity2::class){
+            Navigate.to("withNavigateData", MainActivity2::class){
                 Navigate.with("value1", 47)
             }
         }
@@ -163,7 +166,7 @@ class With {
     @Test
     fun withLoadedEmpty() {
         activityRule.scenario.onActivity {
-            Navigate.to("withLoadedEmpty",MainActivity2::class){
+            Navigate.to("withLoadedEmpty", MainActivity2::class){
                 Navigate.with("withLoaded", 48)
                 Navigate.with("withLoaded2", "Hello")
             }
@@ -174,7 +177,7 @@ class With {
     @Test
     fun withLoadedOneElement() {
         activityRule.scenario.onActivity {
-            Navigate.to("withLoadedOneElement",MainActivity2::class){
+            Navigate.to("withLoadedOneElement", MainActivity2::class){
                 Navigate.with("withLoaded", 48)
                 Navigate.with("withLoaded2", "Hello")
             }
@@ -185,7 +188,7 @@ class With {
     @Test
     fun withLoadedSeveralElements() {
         activityRule.scenario.onActivity {
-            Navigate.to("withLoadedSeveralElements",MainActivity2::class){
+            Navigate.to("withLoadedSeveralElements", MainActivity2::class){
                 Navigate.with("withLoaded", 48)
                 Navigate.with("withLoaded2", "Hello")
             }
