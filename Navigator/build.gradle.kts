@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    `maven-publish`
+    id("maven-publish")
 }
 
 android {
@@ -12,7 +12,7 @@ android {
         minSdk = 27
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-        version = "0.0.4"
+        version = "0.1.0"
     }
 
     buildTypes {
@@ -34,8 +34,8 @@ android {
 }
 
 dependencies {
-//    implementation(libs.moduledroid)
-    implementation(libs.moduledroidLocal)
+    implementation(libs.moduledroid)
+//    implementation(libs.moduledroidLocal)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -43,4 +43,15 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(kotlin("reflect"))
+}
+
+afterEvaluate {
+    android.libraryVariants.forEach { variant ->
+        publishing.publications.create(variant.name, MavenPublication::class) {
+            from(components.findByName(variant.name))
+            groupId = "com.local.agp221-ua"
+            artifactId = "Navigator"
+            version = "0.1.0"
+        }
+    }
 }
