@@ -24,7 +24,11 @@ class NavigatorConfigurator : PluginConfigurator {
             }
         }
 
-        Facade.addOnStopSubscription {
+        Facade.addOnDestroySubscription {
+            ComingActivityPile.saveParentData(it)
+        }
+
+        Facade.addOnSaveInstanceStateSubscription { it: Activity, _: Bundle ->
             ComingActivityPile.saveParentData(it)
         }
 
