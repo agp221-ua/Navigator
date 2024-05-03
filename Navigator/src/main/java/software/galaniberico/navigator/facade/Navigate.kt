@@ -98,7 +98,7 @@ object Navigate {
 
     @NavigateProcess
     fun back(currentActivity: Activity? = null) {
-        val activity: Activity = currentActivity ?: Facade.getCurrentActivity()
+        val activity: Activity = currentActivity ?: Facade.getPreferredActivity()
         ?: throw NullActivityException(
             ErrorMsgTemplate.CURRENT_ACTIVITY_NULL_WARNING.with(
                 "navigate back to parent activity",
@@ -133,7 +133,7 @@ object Navigate {
     }
 
     fun id(activity: Activity? = null): String?{
-        val a = activity ?: Facade.getCurrentActivity() ?: return null
+        val a = activity ?: Facade.getPreferredActivity() ?: return null
         return Facade.getId(a)
     }
 

@@ -275,7 +275,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
     }
 
     private fun currentActivity(): Activity? {
-        val currentActivity: Activity? = Facade.getCurrentActivity()
+        val currentActivity: Activity? = Facade.getPreferredActivity()
         if (currentActivity == null) {
             Log.w(
                 PLUGIN_LOG_TAG,

@@ -32,10 +32,10 @@ class NavigatorConfigurator : PluginConfigurator {
             ComingActivityPile.saveParentData(it)
         }
 
-        Facade.addOnResumeSubscription {
+        Facade.addOnPostResumeSubscription {
             if (ResultDataManager.currentOutputResult == null
                 || ResultDataManager.currentOutputResult!!.parentId != Facade.getId(it))
-                return@addOnResumeSubscription
+                return@addOnPostResumeSubscription
             ResultDataManager.executeOnResult()
         }
 
