@@ -6,43 +6,37 @@ import android.os.Bundle
 import android.util.Log
 import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.moduledroid.subcomponents.kernelconfigurator.PluginConfigurator
-import software.galaniberico.navigator.data.ComingActivityPile
-import software.galaniberico.navigator.data.NavigateDataManager
-import software.galaniberico.navigator.data.ResultDataManager
+import software.galaniberico.navigator.data.NavigateData
 import software.galaniberico.navigator.navigation.LandManager
 
 class NavigatorConfigurator : PluginConfigurator {
     override fun configure(app: Application) {
         Log.i(PLUGIN_LOG_TAG, "Starting plugin configuration")
 
-        Facade.addOnCreateSubscription { activity: Activity, _: Bundle? ->
+        Facade.addOnPreCreateSubscription { activity: Activity, _: Bundle? ->
             try {
-                val s = Facade.getIdOrProvideOne(activity)
+                Facade.getInternalId(activity)
                 LandManager.land(activity)
             } catch (e: Exception){
                 NavigatorConfigurations.landingErrorHandler(e)
             }
         }
 
-        Facade.addOnDestroySubscription {
-            ComingActivityPile.saveParentData(it)
+        Facade.addOnPreDestroySubscription {
+            NavigateData.saveParentData(it)
+        }
+
+        Facade.addOnPostDestroySubscription {
+            if (!it.isChangingConfigurations)
+                NavigateData.remove(it)
         }
 
         Facade.addOnSaveInstanceStateSubscription { it: Activity, _: Bundle ->
-            ComingActivityPile.saveParentData(it)
+            NavigateData.saveParentData(it)
         }
 
-        Facade.addOnPostResumeSubscription {
-            if (ResultDataManager.currentOutputResult == null
-                || ResultDataManager.currentOutputResult!!.parentId != Facade.getId(it))
-                return@addOnPostResumeSubscription
-            ResultDataManager.executeOnResult()
-        }
-
-        Facade.addOnResumeSubscription {
-            if (NavigateDataManager.isParent(it)){
-                NavigateDataManager.nullifyCurrentOutcomeNavigateData()
-            }
+        Facade.addOnPreResumeSubscription {
+            NavigateData.executeOnResult(it)
         }
 
         Log.i(PLUGIN_LOG_TAG, "Plugin configured successfully")

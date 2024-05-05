@@ -3,23 +3,19 @@ package software.galaniberico.navigator.data
 import android.app.Activity
 import android.content.Context
 import android.view.View
-import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
 import software.galaniberico.navigator.configuration.ParentActivityDataAccess
 
-internal class ParentData() {
-
-    internal var id: String? = null
+internal class ParentData(internal var id: String){
     internal var activity: Activity? = null
-    private var data: MutableMap<String, Any?>? = null
+    private var data: MutableMap<String, Any?> = mutableMapOf()
 
     private fun add(id: String, value: Any?) {
-        if (data == null) data = mutableMapOf()
-        data!![id] = value
+        data[id] = value
     }
 
     internal fun get(id: String): Pair<Any?, Boolean> {
-        if (NavigatorConfigurations.parentActivityDataAccess == ParentActivityDataAccess.NEVER){
+        if (NavigatorConfigurations.parentActivityDataAccess == ParentActivityDataAccess.NEVER) {
             return Pair(null, false)
         }
         if (activity != null) {
@@ -37,19 +33,14 @@ internal class ParentData() {
         } else {
             if (NavigatorConfigurations.parentActivityDataAccess == ParentActivityDataAccess.ACTIVITY_ACCESS_OR_DEFAULT)
                 return Pair(null, false)
-            if (data != null) {
-                if (data!!.containsKey(id))
-                    return Pair(data!![id], true)
-                return Pair(null, false)
-            } else {
-                return Pair(null, false) //Strange case. Should not get up to here.
-            }
+            if (data.containsKey(id))
+                return Pair(data[id], true)
+            return Pair(null, false)
         }
     }
 
     internal fun saveData() {
         if (activity == null) return
-        id = Facade.getId(activity!!)
         for (field in activity!!::class.java.declaredFields) {
             if (NavigatorConfigurations.parentActivityMapProtocol.view && View::class.java.isAssignableFrom(
                     field.type

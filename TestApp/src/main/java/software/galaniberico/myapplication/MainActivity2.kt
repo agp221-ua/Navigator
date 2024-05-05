@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -48,14 +47,11 @@ class MainActivity2 : AppCompatActivity() {
             insets
         }
         if (Navigate.id(this) == "loadAlreadyLoaded"){
-            Navigate.load(this)
             Navigate.get<(activity: Activity) -> Unit>("to do")?.let { it(this) }
             return
         }
         if (Navigate.id(this) == "loadOk"){
-            Navigate.load(this)
             Navigate.get("to do",{})?.let { it() }
-            Navigate.nullify()
             Navigate.back(this)
             return
         }
@@ -63,7 +59,6 @@ class MainActivity2 : AppCompatActivity() {
             this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             findViewById<TextView>(R.id.tvWith).text = "${Navigate.get<Int>("value1") ?: "default"}"
             findViewById<TextView>(R.id.tvWith2).text = "${Navigate.get<String>("value2", "default")}"
-
             return
         }
         findViewById<TextView>(R.id.tvA).text = "$aLand"
@@ -77,7 +72,6 @@ class MainActivity2 : AppCompatActivity() {
         findViewById<TextView>(R.id.tvWith2).text = "${Navigate.get<String>("value2", "default")}"
 
         if (Navigate.id(this) == "multipleConsecutive") {
-            Log.w("TEEEEEST", "PASSED")
             val v = Navigate.get<Int>("multipleConsecutive")
                 ?: return
             if (v != 0){
@@ -93,19 +87,19 @@ class MainActivity2 : AppCompatActivity() {
         }
         if (Navigate.id(this) == "withLoadedEmpty") {
             Navigate.from(this).to(MainActivity3::class) {
-                Navigate.withLoaded()
+                Navigate.withPrevious()
             }
             return
         }
         if (Navigate.id(this) == "withLoadedOneElement") {
             Navigate.from(this).to(MainActivity3::class) {
-                Navigate.withLoaded("withLoaded")
+                Navigate.withPrevious("withLoaded")
             }
             return
         }
         if (Navigate.id(this) == "withLoadedSeveralElements") {
             Navigate.from(this).to(MainActivity3::class) {
-                Navigate.withLoaded("withLoaded", "withLoaded2")
+                Navigate.withPrevious("withLoaded", "withLoaded2")
             }
             return
         }

@@ -3,15 +3,10 @@ package software.galaniberico.navigator.facade
 import android.app.Activity
 import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.moduledroid.util.ErrorMsgTemplate
-import software.galaniberico.navigator.configuration.NavigatorConfigurations
-import software.galaniberico.navigator.configuration.UnloadNavigateData
-import software.galaniberico.navigator.data.NavigateDataManager
-import software.galaniberico.navigator.data.ResultDataManager
+import software.galaniberico.navigator.data.NavigateData
+import software.galaniberico.navigator.data.NavigateDataActions
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
-import software.galaniberico.navigator.exceptions.ConcurrentNavigationLoadException
-import software.galaniberico.navigator.exceptions.ConfigurationConflictException
 import software.galaniberico.navigator.exceptions.DataTypeMismatchException
-import software.galaniberico.navigator.exceptions.InvalidActivityIdException
 import software.galaniberico.navigator.exceptions.NullActivityException
 import software.galaniberico.navigator.exceptions.UnexpectedFunctionCallException
 import software.galaniberico.navigator.navigation.NavigationManager
@@ -62,26 +57,30 @@ object Navigate {
     }
 
     fun with(id: String, value: Any?) {
-        NavigateDataManager.with(id, value)
+        if (id.isBlank()) throw BlankIdFieldException("The id field cannot be blank. Please revise the parameter value")
+        NavigateData.navigateIncome?.set(id, value)
+            ?: throw UnexpectedFunctionCallException("You cannot add data outside of a pre-Navigate function. This method should only be called inside a method annotated with the @Navigation tag (executed by a NavigateProcess) or within a Navigate.to() lambda.")
     }
 
-    fun withLoaded(vararg ids: String) {
+    fun withPrevious(vararg ids: String) {
+        val data = NavigateData.of(Facade.getPreferredActivityOrFail()) ?: throw UnexpectedFunctionCallException("You cannot call this method if the current activity has no Navigation data.")
         for (id in ids) {
-            val (value, found) = NavigateDataManager.get(id)
+            val (value, found) = data.get(id)
             if (found)
-                NavigateDataManager.with(id, value)
+                with(id, value)
         }
     }
 
     fun withResult(id: String, value: Any?) {
         if (id.isBlank()) throw BlankIdFieldException("The id field cannot be blank. Please revise the parameter value.")
-        ResultDataManager.top()?.add(id, value)
-            ?: throw UnexpectedFunctionCallException("This method cannot be called out of an Activity for result started with 'toReturn().andThen()'")
+        val resultData = NavigateData.of(Facade.getPreferredActivityOrFail())?.resultData ?: throw UnexpectedFunctionCallException("You cannot add data to return outside of a \"for result\" Activity.")
+        resultData.add(id, value)
     }
 
 
     inline fun <reified T : Any?> get(id: String, default: T? = null): T? {
-        val (value, found) = NavigateDataManager.get(id)
+        if (id.isBlank()) throw BlankIdFieldException("The id field cannot be blank. Please revise the parameter value.")
+        val (value, found) = NavigateDataActions.get(id)
         if (!found) return default
         if (value == null) return null
         if (value !is T) throw DataTypeMismatchException("The retrieved data for id \"$id\" is not of the expected type.")
@@ -89,7 +88,8 @@ object Navigate {
     }
 
     inline fun <reified T : Any?> getResult(id: String, default: T? = null): T? {
-        val (value, found) = ResultDataManager.getResult(id)
+        if (id.isBlank()) throw BlankIdFieldException("The id field cannot be blank. Please revise the parameter value.")
+        val (value, found) = NavigateDataActions.getResult(id)
         if (!found) return default
         if (value == null) return null
         if (value !is T) throw DataTypeMismatchException("The retrieved data for id \"$id\" is not of the expected type.")
@@ -105,36 +105,15 @@ object Navigate {
                 "attempting navigation"
             )
         )
-        ResultDataManager.top()?.let {
-            ResultDataManager.loadOutput()
+        if (NavigateData.of(activity)?.isForResult() == true){
+            NavigateData.of(activity)?.resultData?.hasResult = true
         }
-        NavigateDataManager.nullifyCurrentOutcomeNavigateData()
         activity.finish()
-
-    }
-
-    fun load(currentActivity: Activity) {
-        if (NavigatorConfigurations.unloadNavigateData != UnloadNavigateData.FROM_MANUAL_LOAD_UNTIL_MANUAL_NULLIFY)
-            throw ConfigurationConflictException("Calling this method with the current configuration is not allowed.")
-        val activityId = Facade.getId(currentActivity)
-            ?: throw InvalidActivityIdException("The provided Activity does not contain a valid ID. It is possible that it was not started by this plugin.")
-        if (NavigateDataManager.isLoaded())
-            throw ConcurrentNavigationLoadException("Attempting to load navigation data while another one is still loaded. Please nullify the previous one before loading a new one.")
-
-        NavigateDataManager.loadStoredNavigateData(activityId)
-    }
-
-    fun nullify() {
-        if (NavigatorConfigurations.unloadNavigateData != UnloadNavigateData.FROM_MANUAL_LOAD_UNTIL_MANUAL_NULLIFY
-            && NavigatorConfigurations.unloadNavigateData != UnloadNavigateData.FROM_LAND_UNTIL_MANUAL_NULLIFY
-        )
-            throw ConfigurationConflictException("Calling this method with the current configuration is not allowed.")
-        NavigateDataManager.nullifyCurrentOutcomeNavigateData()
     }
 
     fun id(activity: Activity? = null): String?{
         val a = activity ?: Facade.getPreferredActivity() ?: return null
-        return Facade.getId(a)
+        return Facade.getId(a) //TODO checked
     }
 
 }
