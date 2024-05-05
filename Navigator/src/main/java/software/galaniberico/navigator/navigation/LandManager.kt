@@ -6,11 +6,8 @@ import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.navigator.configuration.LandAnnotationSearch
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
 import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
-import software.galaniberico.navigator.configuration.UnloadNavigateData
-import software.galaniberico.navigator.data.ComingActivityPile
-import software.galaniberico.navigator.data.NavigateDataManager
+import software.galaniberico.navigator.data.NavigateData
 import software.galaniberico.navigator.data.ParentData
-import software.galaniberico.navigator.data.ResultDataManager
 import software.galaniberico.navigator.exceptions.DataTypeMismatchException
 import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.tags.Land
@@ -18,34 +15,20 @@ import java.lang.reflect.Field
 
 internal object LandManager {
     internal fun land(newActivity: Activity) {
-        val activityId = Facade.getId(newActivity)
+        val activityId = Facade.getId(newActivity) //TODO checked
             ?: return //doesn't have id
         Navigate.navigating = false
 
-        val apn = ComingActivityPile.get(activityId, newActivity::class)
+        val apn = NavigateData.of(newActivity)
 
-        if (apn == null){
-            Log.w(PLUGIN_LOG_TAG, "A not expected activity with id '$activityId' is starting. Maybe is something starting an activity external to the plugin?")
+        if (apn == null) {
+            Log.w(PLUGIN_LOG_TAG, "A not expected activity with id '$activityId' is creating. Maybe is something creating an activity external to the plugin?")
             return
         }
 
-        if (NavigatorConfigurations.unloadNavigateData != UnloadNavigateData.NEVER) {
+        if (NavigatorConfigurations.landAnnotationSearch != LandAnnotationSearch.NONE)
+            setAnnotationsData(activityId, newActivity, apn.parentData)
 
-            NavigateDataManager.storeNavigateData(activityId, apn.navigateData, apn.parentData)
-
-            setNavigateData(activityId)
-
-            if (NavigatorConfigurations.landAnnotationSearch != LandAnnotationSearch.NONE)
-                setAnnotationsData(activityId, newActivity, apn.parentData)
-        }
-
-        if (apn.resultData != null)
-            ResultDataManager.put(apn.resultData)
-    }
-
-    private fun setNavigateData(activityId: String) {
-        if (NavigatorConfigurations.unloadNavigateData != UnloadNavigateData.FROM_MANUAL_LOAD_UNTIL_MANUAL_NULLIFY)
-            NavigateDataManager.loadStoredNavigateData(activityId)
     }
 
     private fun setAnnotationsData(
@@ -128,10 +111,8 @@ internal object LandManager {
         attribute: Field,
         newActivity: Activity
     ): Boolean {
-        if (NavigatorConfigurations.unloadNavigateData == UnloadNavigateData.FROM_MANUAL_LOAD_UNTIL_MANUAL_NULLIFY)
-            return false
         try {
-            val (value, found) = NavigateDataManager.get(annotation.oldField, true)
+            val (value, found) = NavigateData.of(newActivity)?.get(annotation.oldField, true) ?: Pair(null, false)
             if (!found) return false
             val newAccessibility = attribute.isAccessible
             attribute.isAccessible = true
@@ -139,7 +120,7 @@ internal object LandManager {
             attribute.isAccessible = newAccessibility
 
         } catch (e: IllegalArgumentException) {
-                throw DataTypeMismatchException("The retrieved data for id \"${annotation.oldField}\" is not of the expected type.")
+            throw DataTypeMismatchException("The retrieved data for id \"${annotation.oldField}\" is not of the expected type.")
         } catch (e: Exception) {
             return false
         }

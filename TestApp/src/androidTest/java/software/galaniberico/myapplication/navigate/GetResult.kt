@@ -15,7 +15,6 @@ import software.galaniberico.myapplication.MainActivity
 import software.galaniberico.myapplication.MainActivity2
 import software.galaniberico.myapplication.R
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
-import software.galaniberico.navigator.exceptions.UnexpectedFunctionCallException
 import software.galaniberico.navigator.facade.Navigate
 
 /**
@@ -32,10 +31,8 @@ class GetResult {
 
     @Test
     fun getResultOutBounds() {
-        Assert.assertThrows(UnexpectedFunctionCallException::class.java) {
-            activityRule.scenario.onActivity {
-                Navigate.getResult("id", "Fail please")
-            }
+        activityRule.scenario.onActivity {
+            Assert.assertEquals(Navigate.getResult("id", "default"), "default")
         }
     }
 
@@ -48,7 +45,7 @@ class GetResult {
                 })
                 Navigate.with("return", true)
             }.andThen {
-                Assert.assertThrows(BlankIdFieldException::class.java){
+                Assert.assertThrows(BlankIdFieldException::class.java) {
                     Navigate.getResult<Any?>("", null)
                 }
             }
@@ -58,16 +55,16 @@ class GetResult {
     @Test
     fun getResultBlank() {
         activityRule.scenario.onActivity {
-                Navigate.toReturn("getResultBlank", MainActivity2::class) {
-                    Navigate.with("to do", {
-                        Navigate.withResult("res1", "return")
-                    })
-                    Navigate.with("return", true)
-                }.andThen {
-                    Assert.assertThrows(BlankIdFieldException::class.java){
-                        Navigate.getResult<Any?>("    ", null)
-                    }
+            Navigate.toReturn("getResultBlank", MainActivity2::class) {
+                Navigate.with("to do", {
+                    Navigate.withResult("res1", "return")
+                })
+                Navigate.with("return", true)
+            }.andThen {
+                Assert.assertThrows(BlankIdFieldException::class.java) {
+                    Navigate.getResult<Any?>("    ", null)
                 }
+            }
 
         }
     }
@@ -76,17 +73,17 @@ class GetResult {
     @Test
     fun getResultMultipleValues() {
         activityRule.scenario.onActivity {
-                Navigate.toReturn("getResultMultipleValues", MainActivity2::class) {
-                    Navigate.with("to do", {
-                        Navigate.withResult("res1", "result ok")
-                        Navigate.withResult("res2", "sdafdf")
-                        Navigate.withResult("res3", "sdaffasdfdsfasdf")
-                        Navigate.withResult("res4", "df")
+            Navigate.toReturn("getResultMultipleValues", MainActivity2::class) {
+                Navigate.with("to do", {
+                    Navigate.withResult("res1", "result ok")
+                    Navigate.withResult("res2", "sdafdf")
+                    Navigate.withResult("res3", "sdaffasdfdsfasdf")
+                    Navigate.withResult("res4", "df")
 
-                    })
-                    Navigate.with("return", true)
-                }.andThen {
-                    it.findViewById<TextView>(R.id.tvMain).text = Navigate.getResult("res1", "default")
+                })
+                Navigate.with("return", true)
+            }.andThen {
+                it.findViewById<TextView>(R.id.tvMain).text = Navigate.getResult("res1", "default")
 
             }
 
@@ -95,39 +92,39 @@ class GetResult {
     }
 
 
-
     @Test
     fun getResultDifferentValueTypes() {
         activityRule.scenario.onActivity {
-                Navigate.toReturn("getResultDifferentValueTypes", MainActivity2::class) {
-                    Navigate.with("to do", {
-                        Navigate.withResult("res1", "result ok")
-                        Navigate.withResult("res2", 45)
+            Navigate.toReturn("getResultDifferentValueTypes", MainActivity2::class) {
+                Navigate.with("to do", {
+                    Navigate.withResult("res1", "result ok")
+                    Navigate.withResult("res2", 45)
 
-                    })
-                    Navigate.with("return", true)
-                }.andThen {
-                    it.findViewById<TextView>(R.id.tvMain).text = Navigate.getResult("res1", "default")
-                    it.findViewById<TextView>(R.id.tvMain).text = "${Navigate.getResult("res2", 0)}"
-                }
+                })
+                Navigate.with("return", true)
+            }.andThen {
+                it.findViewById<TextView>(R.id.tvMain).text = Navigate.getResult("res1", "default")
+                it.findViewById<TextView>(R.id.tvMain).text = "${Navigate.getResult("res2", 0)}"
+            }
 
 
         }
         onView(withId(R.id.tvMain)).check(matches(withText("45")))
     }
+
     @Test
     fun getResultSameId() {
         activityRule.scenario.onActivity {
-                Navigate.toReturn("getResultSameId", MainActivity2::class) {
-                    Navigate.with("to do", {
-                        Navigate.withResult("res2", "result ok")
-                        Navigate.withResult("res2", 45)
+            Navigate.toReturn("getResultSameId", MainActivity2::class) {
+                Navigate.with("to do", {
+                    Navigate.withResult("res2", "result ok")
+                    Navigate.withResult("res2", 45)
 
-                    })
-                    Navigate.with("return", true)
-                }.andThen {
-                    it.findViewById<TextView>(R.id.tvMain).text = "${Navigate.getResult("res2", 0)}"
-                }
+                })
+                Navigate.with("return", true)
+            }.andThen {
+                it.findViewById<TextView>(R.id.tvMain).text = "${Navigate.getResult("res2", 0)}"
+            }
 
 
         }
@@ -136,33 +133,35 @@ class GetResult {
 
     @Test
     fun getResultNull() {
-            activityRule.scenario.onActivity {
-                Navigate.toReturn("getResultNull", MainActivity2::class) {
-                    Navigate.with("to do", {
-                        Navigate.withResult("res2", null)
-
-                    })
-                    Navigate.with("return", true)
-                }.andThen {
-                    it.findViewById<TextView>(R.id.tvMain).text = Navigate.getResult("res2", "0") ?: "default"
-                }
+        activityRule.scenario.onActivity {
+            Navigate.toReturn("getResultNull", MainActivity2::class) {
+                Navigate.with("to do", {
+                    Navigate.withResult("res2", null)
+                })
+                Navigate.with("return", true)
+            }.andThen {
+                it.findViewById<TextView>(R.id.tvMain).text =
+                    Navigate.getResult("res2", "0") ?: "default"
+            }
 
 
         }
         onView(withId(R.id.tvMain)).check(matches(withText("default")))
     }
+
     @Test
     fun getResultDefault() {
         activityRule.scenario.onActivity {
-                Navigate.toReturn("getResultDefault", MainActivity2::class) {
-                    Navigate.with("to do", {
-                        Navigate.withResult("res2", "value found")
+            Navigate.toReturn("getResultDefault", MainActivity2::class) {
+                Navigate.with("to do", {
+                    Navigate.withResult("res2", "value found")
 
-                    })
-                    Navigate.with("return", true)
-                }.andThen {
-                    it.findViewById<TextView>(R.id.tvMain).text = Navigate.getResult("res1", "0000") ?: "found null"
-                }
+                })
+                Navigate.with("return", true)
+            }.andThen {
+                it.findViewById<TextView>(R.id.tvMain).text =
+                    Navigate.getResult("res1", "0000") ?: "found null"
+            }
 
 
         }

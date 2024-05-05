@@ -9,16 +9,12 @@ import software.galaniberico.navigator.configuration.MultipleOnResultIdTargets
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
 import software.galaniberico.navigator.configuration.PLUGIN_LOG_TAG
 import software.galaniberico.navigator.configuration.ParentActivityDataAccess
-import software.galaniberico.navigator.data.ComingActivityPile
-import software.galaniberico.navigator.data.NavigateDataManager
+import software.galaniberico.navigator.data.NavigateData
 import software.galaniberico.navigator.data.ParentData
 import software.galaniberico.navigator.data.ResultData
-import software.galaniberico.navigator.data.ResultDataManager
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
 import software.galaniberico.navigator.exceptions.ConcurrentNavigationException
-import software.galaniberico.navigator.exceptions.InvalidActivityIdException
 import software.galaniberico.navigator.exceptions.NoTargetsException
-import software.galaniberico.navigator.exceptions.NullActivityException
 import software.galaniberico.navigator.exceptions.TooManyTargetsException
 import software.galaniberico.navigator.exceptions.UnexpectedFunctionCallException
 import software.galaniberico.navigator.facade.Navigate
@@ -28,211 +24,162 @@ import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
 class NavigationManager internal constructor(var activity: Activity?) {
-    private var navigateData: Map<String, Any?>? = null
-    private var parentData: ParentData? = null
+    private var navigateData: NavigateData? = null
     private var target: KClass<out Activity>? = null
     private var id: String? = null
 
-    fun to(id: String) {
-        checkId(id)
-        checkUnique(id)
-        getActivity()
-
+    private fun commonTo(lambdaGetter: () -> (Pair<KClass<out Activity>, () -> Unit>)): Pair<KClass<out Activity>, NavigateData> {
         if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
-        if (ResultDataManager.top() != null)
+        activity = activity ?: Facade.getPreferredActivityOrFail()
+        if (NavigateData.of(activity!!)?.isForResult() == true)
             throw UnexpectedFunctionCallException("Attempting to navigate to an activity that is not intended to be returned from one that does, what is not allowed.")
         Navigate.navigating = true
-        val annotatedMethods: MutableList<Method> = mutableListOf()
-        var target: KClass<out Activity>? = null
 
-        for (member in activity!!.javaClass.declaredMethods) {
-            if (member.isAnnotationPresent(Navigation::class.java)
-                && member.getAnnotation(Navigation::class.java)?.id == id
-            ) {
-                annotatedMethods.add(member)
-                if (target == null)
-                    target = member.getAnnotation(Navigation::class.java)?.target
+        val (target, lambda) = lambdaGetter()
+        val parentData = resolveParentData(activity!!)
+        val navigateData = NavigateData(parentData)
+        NavigateData.prepareIncome()
+        try {
+        lambda()
+        } finally {
+            NavigateData.resolveIncome(navigateData)
+        }
+
+        return Pair(target, navigateData)
+    }
+
+    private fun start(
+        target: KClass<out Activity>,
+        navigateData: NavigateData,
+        _id: String? = null
+    ) {
+        Facade.startActivity(activity!!, target.java, _id) { _, _, internalId ->
+            Log.w("TEEEEEEEEEST", "STARTING FROM ${activity.toString()} WITH ID=$id")
+            NavigateData.set(internalId, navigateData)
+        }
+    }
+
+    fun to(id: String) {
+        checkId(id)
+
+        val (target, navigateData) = commonTo {
+            val annotatedMethods: MutableList<Method> = mutableListOf()
+            var target: KClass<out Activity>? = null
+
+            for (member in activity!!.javaClass.declaredMethods) {
+                if (member.isAnnotationPresent(Navigation::class.java)
+                    && member.getAnnotation(Navigation::class.java)?.id == id
+                ) {
+                    annotatedMethods.add(member)
+                    if (target == null)
+                        target = member.getAnnotation(Navigation::class.java)?.target
+                }
+            }
+            checkNavigationTargets(annotatedMethods, activity!!, id)
+            return@commonTo Pair(target!!) {
+                annotatedMethods[0].apply {
+                    val a = this.isAccessible
+                    isAccessible = true
+                    invoke(activity!!)
+                    isAccessible = a
+                }
             }
         }
-        checkNavigationTargets(annotatedMethods, activity!!, id)
-
-        NavigateDataManager.prepareIncome()
-        annotatedMethods[0].apply {
-            val a = this.isAccessible
-            isAccessible = true
-            invoke(activity!!)
-            isAccessible = a
-        }
-        val navigateData = NavigateDataManager.resolveIncome()
-
-        val parentData = resolveParentData(activity!!)
-
-        target?.let {
-            Facade.startActivity(activity!!, it.java, id)
-            ComingActivityPile.put(id, it, navigateData, parentData)
-        }
+        start(target, navigateData, id)
     }
 
     fun to(clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
-        if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
-        if (ResultDataManager.top() != null) throw UnexpectedFunctionCallException("Attempting to navigate to an activity that is not intended to be returned from one that does, what is not allowed.")
-        getActivity()
-        Navigate.navigating = true
-
-        NavigateDataManager.prepareIncome()
-        try {
-            lambda()
-        }catch (e: Exception){
-            NavigateDataManager.nullifyCurrentIncomeNavigateData()
-            throw e
-        }
-        val navigateData = NavigateDataManager.resolveIncome()
-        val parentData = resolveParentData(activity!!)
-
-        val id = Facade.startActivity(activity!!, clazz.java)
-        ComingActivityPile.put(id, clazz, navigateData, parentData)
+        val (target, navigateData) = commonTo { return@commonTo Pair(clazz, lambda) }
+        start(target, navigateData)
     }
 
     fun to(id: String, clazz: KClass<out Activity>, lambda: () -> Unit = {}) {
-        if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
-        if (ResultDataManager.top() != null) throw UnexpectedFunctionCallException("Attempting to navigate to an activity that is not intended to be returned from one that does, what is not allowed.")
-        getActivity()
-        Navigate.navigating = true
-        checkId(id)
-        checkUnique(id)
-        NavigateDataManager.prepareIncome()
-        lambda()
-        val navigateData = NavigateDataManager.resolveIncome()
-        val parentData = resolveParentData(activity!!)
-
-        Facade.startActivity(activity!!, clazz.java, id)
-
-        ComingActivityPile.put(id, clazz, navigateData, parentData)
+        val (target, navigateData) = commonTo { return@commonTo Pair(clazz, lambda) }
+        start(target, navigateData, id)
     }
 
+    //TODO check configuration
+    //TODO the toReturns below must just add the return data to the navigation data and then in the
+    // andThen() do the necessary actions to get the onActivityResult actions and init the navigation, maybe with a to() call
+    //TODO just see if something else is needed
     fun toReturn(id: String): NavigationManager {
-        this.id = checkId(id)
-        checkUnique(id)
+        checkId(id)
 
-        getActivity()
+        val (_target, _navigateData) = commonTo {
+            val annotatedMethods: MutableList<Method> = mutableListOf()
+            var target: KClass<out Activity>? = null
 
-        if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
-        Navigate.navigating = true
-        val annotatedMethods: MutableList<Method> = mutableListOf()
-
-        for (member in activity!!.javaClass.declaredMethods) {
-            if (member.isAnnotationPresent(Navigation::class.java)
-                && member.getAnnotation(Navigation::class.java)?.id == id
-            ) {
-                val idddd = member.getAnnotation(Navigation::class.java)?.id
-                annotatedMethods.add(member)
-                if (target == null)
-                    target = member.getAnnotation(Navigation::class.java)?.target
+            for (member in activity!!.javaClass.declaredMethods) {
+                if (member.isAnnotationPresent(Navigation::class.java)
+                    && member.getAnnotation(Navigation::class.java)?.id == id
+                ) {
+                    annotatedMethods.add(member)
+                    if (target == null)
+                        target = member.getAnnotation(Navigation::class.java)?.target
+                }
+            }
+            checkNavigationTargets(annotatedMethods, activity!!, id)
+            return@commonTo Pair(target!!) {
+                annotatedMethods[0].apply {
+                    val a = this.isAccessible
+                    isAccessible = true
+                    invoke(activity!!)
+                    isAccessible = a
+                }
             }
         }
-
-        checkNavigationTargets(annotatedMethods, activity!!, id)
-
-        NavigateDataManager.prepareIncome()
-        annotatedMethods[0].apply {
-            val a = this.isAccessible
-            isAccessible = true
-            invoke(activity!!)
-            isAccessible = a
-        }
-        navigateData = NavigateDataManager.resolveIncome()
-
-        parentData = resolveParentData(activity!!)
+        this.target = _target
+        this.navigateData = _navigateData
+        this.id = id
 
         return this
     }
 
     fun toReturn(clazz: KClass<out Activity>, lambda: () -> Unit = {}): NavigationManager {
-        if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
-        getActivity()
-        Navigate.navigating = true
-        NavigateDataManager.prepareIncome()
-        lambda()
-        navigateData = NavigateDataManager.resolveIncome()
-        parentData = resolveParentData(activity!!)
-        target = clazz
-
+        val (_target, _navigateData) = commonTo { return@commonTo Pair(clazz, lambda) }
+        this.target = _target
+        this.navigateData = _navigateData
         return this
 
     }
 
-    fun toReturn(
-        id: String,
-        clazz: KClass<out Activity>,
-        lambda: () -> Unit = {}
-    ): NavigationManager {
-        if (Navigate.navigating) throw ConcurrentNavigationException("Nested Navigation is not allowed.")
-        getActivity()
-        Navigate.navigating = true
-        this.id = checkId(id)
-        checkUnique(id)
-        NavigateDataManager.prepareIncome()
-        lambda()
-        navigateData = NavigateDataManager.resolveIncome()
-        parentData = resolveParentData(activity!!)
-        target = clazz
+    fun toReturn( id: String, clazz: KClass<out Activity>, lambda: () -> Unit = {}): NavigationManager {
+        checkId(id)
+        val (_target, _navigateData) = commonTo { return@commonTo Pair(clazz, lambda) }
 
+        this.target = _target
+        this.navigateData = _navigateData
+        this.id = id
         return this
     }
 
     fun andThen() {
-        checkToReturnIsCalled()
-        if (id == null) {
-            Navigate.navigating = false
-            throw UnexpectedFunctionCallException("This method cannot be called after calling a 'toReturn' method without providing an 'id' parameter.")
-        }
-        val onResultId = id!!
-        val resultData = getResultDataFromTag(onResultId)
-
-        Facade.startActivity(activity!!, target!!.java, id)
-        ComingActivityPile.put(id!!, target!!, navigateData!!, parentData!!, resultData)
+        checkToReturnIsCalled(id == null)
+        navigateData!!.resultData = getResultDataFromTag(id!!)
+        start(target!!, navigateData!!, id)
     }
-
 
     fun andThen(onResultId: String) {
         checkToReturnIsCalled()
-        val resultData = getResultDataFromTag(onResultId)
-        if (id == null) {
-            val idd = Facade.startActivity(activity!!, target!!.java)
-            ComingActivityPile.put(idd, target!!, navigateData!!, parentData!!, resultData)
-        } else {
-            Facade.startActivity(activity!!, target!!.java, id)
-            ComingActivityPile.put(id!!, target!!, navigateData!!, parentData!!, resultData)
-        }
+        navigateData!!.resultData = getResultDataFromTag(onResultId)
+        start(target!!, navigateData!!, id)
     }
 
     fun andThen(lambda: () -> Unit) {
         checkToReturnIsCalled()
-        val resultData = ResultData(parentData!!.id!!, lambda)
-        if (id == null) {
-            val idd = if (activity != null)
-                Facade.startActivity(activity!!, target!!.java)
-            else
-                Facade.startActivity(target!!.java)
-            ComingActivityPile.put(idd, target!!, navigateData!!, parentData!!, resultData)
-        } else {
-            if (activity != null)
-                Facade.startActivity(activity!!, target!!.java, id)
-            else
-                Facade.startActivity(target!!.java, id)
-            ComingActivityPile.put(id!!, target!!, navigateData!!, parentData!!, resultData)
-        }
+        navigateData!!.resultData = ResultData(lambda)
+
+        start(target!!, navigateData!!, id)
     }
 
-    private fun checkToReturnIsCalled() {
-        if (navigateData == null || parentData == null || target == null) {
+    private fun checkToReturnIsCalled(extraCondition: Boolean = false) {
+        if (navigateData == null || target == null || extraCondition) {
             Navigate.navigating = false
             throw UnexpectedFunctionCallException("This method cannot be called before calling the 'toReturn' method.")
         }
     }
-    private fun getResultDataFromTag(onResultId: String): ResultData {
-        getActivity()
 
+    private fun getResultDataFromTag(onResultId: String): ResultData {
         val annotatedMethods: MutableList<Method> = mutableListOf()
 
         for (member in activity!!.javaClass.declaredMethods) {
@@ -245,7 +192,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
 
         checkOnResultTargets(annotatedMethods, activity!!, onResultId)
 
-        val resultData = ResultData(parentData!!.id!!) {
+        val resultData = ResultData {
             annotatedMethods[0].apply {
                 val a = this.isAccessible
                 this.isAccessible = true
@@ -257,9 +204,8 @@ class NavigationManager internal constructor(var activity: Activity?) {
     }
 
     private fun resolveParentData(activity: Activity): ParentData {
-        val parentData = ParentData()
+        val parentData = ParentData(Facade.getInternalId(activity))
         parentData.activity = activity
-        parentData.id = Facade.getId(activity)
         if (NavigatorConfigurations.parentActivityDataAccess != ParentActivityDataAccess.MAP_COPY)
             return parentData
         parentData.saveData()
@@ -267,7 +213,7 @@ class NavigationManager internal constructor(var activity: Activity?) {
     }
 
     private fun checkId(id: String): String {
-        if (id.isBlank()){
+        if (id.isBlank()) {
             Navigate.navigating = false
             throw BlankIdFieldException("The id field cannot be blank. Please revise the parameter value or if you prefer not to set an id, you can use to(KClass<out Activity>) method instead")
         }
@@ -348,21 +294,6 @@ class NavigationManager internal constructor(var activity: Activity?) {
         }
     }
 
-    private fun checkUnique(id: String){
-        if (ComingActivityPile.has(id)) {
-            Navigate.navigating = false
-            throw InvalidActivityIdException("The ID provided is already in use. Please choose a different ID to avoid conflicts.")
-        }
-    }
-
-    private fun getActivity() {
-        if (activity == null)
-            activity = currentActivity()
-        if(activity == null){
-            Navigate.navigating = false
-            throw NullActivityException("You are trying to navigate from a null Activity. Maybe is not already started.")
-        }
-    }
 
 
 }

@@ -37,7 +37,7 @@ class Config {
         activityRule.scenario.onActivity {
             Assert.assertThrows(EnumTypeMismatchException::class.java){
                 Navigator.config(
-                    ConfigurationField.UNLOAD_NAVIGATEDATA,
+                    ConfigurationField.PARENT_ACTIVITY_DATA_ACCESS,
                     LandAnnotationSearch.OLD_FIELDS
                 )
             }

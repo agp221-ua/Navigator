@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         view = findViewById(R.id.tvMain)
+
     }
 
     @Navigation("onResult", MainActivity2::class)

@@ -22,9 +22,6 @@ enum class ConfigurationField(
     LAND_GETTER_SEARCH(
         LandGetterSearch::class,
         { NavigatorConfigurations.landGetterSearch = it as LandGetterSearch }),
-    UNLOAD_NAVIGATEDATA(
-        UnloadNavigateData::class,
-        { NavigatorConfigurations.unloadNavigateData = it as UnloadNavigateData }),
     MULTIPLE_NAVIGATION_ID_TARGETS(
         MultipleNavigationIdTargets::class,
         {NavigatorConfigurations.multipleNavigationIdTargets = it as MultipleNavigationIdTargets}),
@@ -56,12 +53,6 @@ enum class LandGetterSearch : OptionEnum {
     NAVIGATE_DATA_THEN_OLD_FIELDS;
 }
 
-enum class UnloadNavigateData : OptionEnum {
-    NEVER, //No navigatedata. All access to this, will cause an exception.
-    FROM_MANUAL_LOAD_UNTIL_MANUAL_NULLIFY, //if not load, no data. if load and load without nullify, exception.
-    FROM_LAND_UNTIL_MANUAL_NULLIFY, //If land start and not nullify, no new navigate data will be loaded and exception (avoid bugs)
-    FROM_LAND_UNTIL_OTHER_LAND; //Each new land removes the previous one and loads the new one
-}
 
 enum class ParentActivityDataAccess(val saveActivity: Boolean) : OptionEnum {
     NEVER(false), //When try to access sth at parentActivity will ignore it and return default or not change if attribute with @Land

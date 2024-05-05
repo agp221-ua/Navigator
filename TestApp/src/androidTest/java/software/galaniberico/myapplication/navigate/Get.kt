@@ -16,7 +16,6 @@ import software.galaniberico.myapplication.MainActivity
 import software.galaniberico.myapplication.MainActivity2
 import software.galaniberico.myapplication.R
 import software.galaniberico.navigator.exceptions.BlankIdFieldException
-import software.galaniberico.navigator.exceptions.MissingLoadedDataException
 import software.galaniberico.navigator.facade.Navigate
 
 /**
@@ -33,18 +32,17 @@ class Get {
 
     @Test
     fun getOutBounds() {
-        Assert.assertThrows(MissingLoadedDataException::class.java) {
-            activityRule.scenario.onActivity {
-                Navigate.get("id", "Fail please")
-            }
+        activityRule.scenario.onActivity {
+            Assert.assertEquals(Navigate.get("id", "default"), "default")
         }
+
     }
 
     @Test
     fun getEmptyId() {
         Assert.assertThrows(BlankIdFieldException::class.java) {
             activityRule.scenario.onActivity {
-                Navigate.get("", "Fail please")
+                Navigate.get("", "default")
             }
         }
     }
@@ -68,18 +66,18 @@ class Get {
 
         onView(ViewMatchers.isRoot()).perform(ViewActions.pressBack())
 
-        Assert.assertThrows(MissingLoadedDataException::class.java) {
-            activityRule.scenario.onActivity {
-                Navigate.get("id", "default")
-            }
+
+        activityRule.scenario.onActivity {
+            Assert.assertEquals(Navigate.get("id", "default"), "default")
         }
+
     }
 
 
     @Test
     fun getMultipleValues() {
         activityRule.scenario.onActivity {
-            Navigate.to(MainActivity2::class){
+            Navigate.to(MainActivity2::class) {
                 Navigate.with("value11", 34445)
                 Navigate.with("value111", 345)
                 Navigate.with("value1", 34945)
@@ -93,7 +91,7 @@ class Get {
     @Test
     fun getDifferentValueTypes() {
         activityRule.scenario.onActivity {
-            Navigate.to(MainActivity2::class){
+            Navigate.to(MainActivity2::class) {
                 Navigate.with("value1", 49)
                 Navigate.with("value2", "34445")
             }
@@ -102,10 +100,11 @@ class Get {
         onView(withId(R.id.tvWith)).check(matches(withText("49")))
         onView(withId(R.id.tvWith2)).check(matches(withText("34445")))
     }
+
     @Test
     fun getSameId() {
         activityRule.scenario.onActivity {
-            Navigate.to(MainActivity2::class){
+            Navigate.to(MainActivity2::class) {
                 Navigate.with("value1", "34445")
                 Navigate.with("value1", 34)
             }
@@ -119,7 +118,7 @@ class Get {
     @Test
     fun getNull() {
         activityRule.scenario.onActivity {
-            Navigate.to(MainActivity2::class){
+            Navigate.to(MainActivity2::class) {
                 Navigate.with("value1", null)
             }
         }
@@ -131,7 +130,7 @@ class Get {
     @Test
     fun getNoIntroducedValue() {
         activityRule.scenario.onActivity {
-            Navigate.to(MainActivity2::class){
+            Navigate.to(MainActivity2::class) {
                 Navigate.with("anyid2", null)
             }
         }
@@ -157,7 +156,7 @@ class Get {
     @Test
     fun getClass() {
         activityRule.scenario.onActivity {
-            Navigate.to(MainActivity2::class){
+            Navigate.to(MainActivity2::class) {
                 Navigate.with("value1", 49)
                 Navigate.with("value2", "34445")
             }
@@ -173,7 +172,7 @@ class Get {
     @Test
     fun getIdClass() {
         activityRule.scenario.onActivity {
-            Navigate.to("getId", MainActivity2::class){
+            Navigate.to("getId", MainActivity2::class) {
                 Navigate.with("value1", 49)
                 Navigate.with("value2", "34445")
             }
@@ -182,6 +181,7 @@ class Get {
         onView(withId(R.id.tvWith)).check(matches(withText("49")))
         onView(withId(R.id.tvWith2)).check(matches(withText("34445")))
     }
+
     @Test
     fun getIdClassRecreate() {
         activityRule.scenario.onActivity {

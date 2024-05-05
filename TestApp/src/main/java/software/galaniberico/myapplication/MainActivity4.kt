@@ -38,9 +38,7 @@ class MainActivity4 : AppCompatActivity() {
         }
         if (Navigate.id(this) == "manualLoad"){
             try {
-                Navigate.load(this)
                 Navigate.get("to do",{})?.let { it() }
-                Navigate.nullify()
                 findViewById<TextView>(R.id.tvError).text = "all ok"
             } catch (e: Exception) {
                 findViewById<TextView>(R.id.tvError).text = e::class.java.name.split(".").last()
@@ -59,7 +57,6 @@ class MainActivity4 : AppCompatActivity() {
         if (Navigate.id(this) == "autoLoad"){
             try {
                 Navigate.get("to do",{})?.let { it() }
-                Navigate.nullify()
                 Navigate.from(this).to("autoLoad2", MainActivity4::class)
                 findViewById<TextView>(R.id.tvError).text = "all ok"
             } catch (e: Exception) {
@@ -70,7 +67,6 @@ class MainActivity4 : AppCompatActivity() {
         if (Navigate.id(this) == "autoLoad2"){
             try {
                 Navigate.get("to do",{})?.let { it() }
-                Navigate.nullify()
                 findViewById<TextView>(R.id.tvError).text = "all ok"
             } catch (e: Exception) {
                 findViewById<TextView>(R.id.tvError).text = e::class.java.name.split(".").last()

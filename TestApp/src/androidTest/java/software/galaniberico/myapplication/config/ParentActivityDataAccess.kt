@@ -1,24 +1,19 @@
 package software.galaniberico.myapplication.config
 
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import software.galaniberico.myapplication.MainActivity
-import software.galaniberico.myapplication.MainActivity2
 import software.galaniberico.myapplication.MainActivity5
 import software.galaniberico.myapplication.R
 import software.galaniberico.navigator.configuration.ConfigurationField
 import software.galaniberico.navigator.configuration.ParentActivityDataAccess
-import software.galaniberico.navigator.exceptions.MissingLoadedDataException
 import software.galaniberico.navigator.facade.Navigate
 import software.galaniberico.navigator.facade.Navigator
 
@@ -48,25 +43,25 @@ class ParentActivityDataAccess {
         onView(withId(R.id.tvBoth)).check(matches(withText("3")))
     }
 
-    @Test
-    fun activityOrDefaultCheckNullifyDataWhenBack() {
-        Navigator.config(ConfigurationField.PARENT_ACTIVITY_DATA_ACCESS, ParentActivityDataAccess.ACTIVITY_ACCESS_OR_DEFAULT)
-
-        activityRule.scenario.onActivity {
-            Navigate.to(MainActivity2::class) {
-                Navigate.with("id", "value")
-
-            }
-        }
-
-        onView(ViewMatchers.isRoot()).perform(ViewActions.pressBack())
-
-        Assert.assertThrows(MissingLoadedDataException::class.java) {
-            activityRule.scenario.onActivity {
-                Navigate.get("id", "default")
-            }
-        }
-    }
+//    @Test
+//    fun activityOrDefaultCheckNullifyDataWhenBack() {
+//        Navigator.config(ConfigurationField.PARENT_ACTIVITY_DATA_ACCESS, ParentActivityDataAccess.ACTIVITY_ACCESS_OR_DEFAULT)
+//
+//        activityRule.scenario.onActivity {
+//            Navigate.to(MainActivity2::class) {
+//                Navigate.with("id", "value")
+//
+//            }
+//        }
+//
+//        onView(ViewMatchers.isRoot()).perform(ViewActions.pressBack())
+//
+//        Assert.assertThrows(MissingLoadedDataException::class.java) {
+//            activityRule.scenario.onActivity {
+//                Navigate.get("id", "default")
+//            }
+//        }
+//    }
 
 
 
