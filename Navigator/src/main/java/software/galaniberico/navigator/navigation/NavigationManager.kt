@@ -54,7 +54,6 @@ class NavigationManager internal constructor(var activity: Activity?) {
         _id: String? = null
     ) {
         Facade.startActivity(activity!!, target.java, _id) { _, _, internalId ->
-            Log.w("TEEEEEEEEEST", "STARTING FROM ${activity.toString()} WITH ID=$id")
             NavigateData.set(internalId, navigateData)
         }
     }

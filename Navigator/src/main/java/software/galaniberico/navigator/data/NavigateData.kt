@@ -1,7 +1,6 @@
 package software.galaniberico.navigator.data
 
 import android.app.Activity
-import android.util.Log
 import software.galaniberico.moduledroid.facade.Facade
 import software.galaniberico.navigator.configuration.LandGetterSearch
 import software.galaniberico.navigator.configuration.NavigatorConfigurations
@@ -47,8 +46,6 @@ internal class NavigateData(val parentData: ParentData){
         private val datas = TwoKeyMutableMap<String, String, NavigateData>()
         var resultData: NavigateData? = null
         internal fun of(activity: Activity): NavigateData? {
-            Log.w("TEEEEEEEEEST", "LOOKIN FOR ${Facade.getInternalId(activity)}")
-            Log.w("TEEEEEEEEEST", "KEYS ${datas.getPeyset()}")
             return datas.getK(Facade.getInternalId(activity))
         }
 

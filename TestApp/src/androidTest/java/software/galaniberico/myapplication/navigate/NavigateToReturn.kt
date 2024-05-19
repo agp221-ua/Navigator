@@ -1,6 +1,5 @@
 package software.galaniberico.myapplication.navigate
 
-import android.util.Log
 import android.widget.TextView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
@@ -98,11 +97,10 @@ class NavigateToReturn {
     }
 
     @Test
-    fun toCreateNotToReturnActivityFromAndThen() { //TODO peta
+    fun toCreateNotToReturnActivityFromAndThen() {
 
         activityRule.scenario.onActivity {
             Navigate.from(it).toReturn("onResult").andThen {
-                Log.w("TEEEEEEEEEST", "TO DOING")
                 Navigate.from(it).to("withTag")
             }
         }
@@ -112,7 +110,7 @@ class NavigateToReturn {
     }
 
     @Test
-    fun toCreateReturnActivityFromAndThen() { //TODO peta raro
+    fun toCreateReturnActivityFromAndThen() {
         activityRule.scenario.onActivity {
             Navigate.toReturn("onResult").andThen {
                 Navigate.toReturn("onResult").andThen {
